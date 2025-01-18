@@ -1,0 +1,79 @@
+2025-01-17 13:15:13.171 | INFO     | x20launcher.launcher_application:__init__:1193 - ********************************* Start *********************************
+2025-01-17 13:15:13.171 | INFO     | x20launcher.launcher_application:__init__:1194 - X20Launcher init start
+2025-01-17 13:15:13.171 | INFO     | x20launcher.launcher_application:__init__:1196 - init log
+2025-01-17 13:15:13.177 | INFO     | x20launcher.launcher_application:exec:1200 - Launcher version is 1.4.427
+2025-01-17 13:15:13.178 | ERROR    | x20launcher.bridge.sunshine_boost_helper:get_launcher_state_record:276 - read launch state failed, error: [Errno 2] No such file or directory: 'D:\\dashbaord\\my-dashboard\\src-tauri\\launch_record'
+2025-01-17 13:15:13.179 | INFO     | x20launcher.launcher_application:__init__:1115 - Application init start
+2025-01-17 13:15:13.665 | INFO     | x20launcher.launcher_application:launch_record:1179 - Launch record
+2025-01-17 13:15:13.665 | INFO     | x20launcher.launcher_application:__init__:80 - QMLContext init start
+2025-01-17 13:15:13.666 | INFO     | x20launcher.launcher_application:__init__:89 - Verify invite code success. don't need invite code
+2025-01-17 13:15:13.667 | INFO     | x20launcher.launcher_application:update_region:348 - Language: ru_RU, Encoding: cp1252
+2025-01-17 13:15:13.667 | INFO     | x20launcher.launcher_application:update_region:353 - Local Timezone Offset: 5.0 hours
+2025-01-17 13:15:13.667 | INFO     | x20launcher.launcher_application:check_offline_marker:694 - offline marker time is 1737101713.6660855, current time:1737101713.6670847, offline marker timeout is 86400
+2025-01-17 13:15:13.667 | INFO     | x20launcher.launcher_application:check_local_ip:288 - requesting whoami URL: https://who.easebar.com/v2
+2025-01-17 13:15:14.747 | INFO     | x20launcher.launcher_application:check_local_ip:295 - whoami ret code: 200, setting env GAME_UNISDK_AIM_INFO
+2025-01-17 13:15:14.747 | INFO     | x20launcher.launcher_application:update_region:381 - rg is V4r@
+2025-01-17 13:15:14.747 | INFO     | x20launcher.launcher_application:update_region:388 - loc is NA
+2025-01-17 13:15:14.766 | INFO     | x20launcher.launcher_application:__init__:116 - set orbit project id x20na
+2025-01-17 13:15:14.783 | INFO     | x20launcher.launcher_application:check_offline_marker:694 - offline marker time is 1737101713.6660855, current time:1737101714.7834845, offline marker timeout is 86400
+2025-01-17 13:15:14.783 | INFO     | x20launcher.launcher_application:fire_download_patchlists:708 - Start download multi patchlists
+2025-01-17 13:15:14.783 | INFO     | x20launcher.utils.multithread_request:send_requests:47 - Start making multi requests
+2025-01-17 13:15:14.785 | INFO     | x20launcher.utils.multithread_request:send_get_request:26 - start sending request: https://x20na.update.easebar.com/pl/launcher_headcode_steam
+2025-01-17 13:15:14.785 | INFO     | x20launcher.utils.multithread_request:send_get_request:26 - start sending request: https://x20na.update.easebar.com/pl/launcher_release_steam
+2025-01-17 13:15:14.785 | INFO     | x20launcher.utils.multithread_request:send_get_request:26 - start sending request: https://x20na.update.easebar.com/pl/pc_release_steam
+2025-01-17 13:15:14.787 | INFO     | x20launcher.utils.multithread_request:send_get_request:26 - start sending request: https://x20na.update.easebar.com/pl/meta_steam
+2025-01-17 13:15:14.788 | INFO     | x20launcher.launcher_application:__init__:167 - QMLContext init finish
+2025-01-17 13:15:14.803 | INFO     | x20launcher.launcher_application:__init__:1138 - Application init finish
+2025-01-17 13:15:15.094 | WARNING  | x20launcher.utils.multithread_request:send_get_request:43 - request failed:https://x20na.update.easebar.com/pl/pc_release_steam, reason is HTTP Error 404: Not Found
+2025-01-17 13:15:16.254 | INFO     | x20launcher.qt_qml.utils:message_handler:19 - qml: MainWindow Completed
+2025-01-17 13:15:16.254 | INFO     | x20launcher.qt_qml.utils:message_handler:19 - qml: BaseView Completed
+2025-01-17 13:15:16.272 | INFO     | x20launcher.qt_qml.utils:message_handler:19 - qml: AntiCheatPopup onCompleted
+2025-01-17 13:15:16.376 | INFO     | x20launcher.qt_qml.utils:message_handler:19 - qml: MainWindow lazyLoad
+2025-01-17 13:15:16.379 | INFO     | x20launcher.qt_qml.utils:message_handler:19 - qml: MainWindowLazyLoadItem Ready
+2025-01-17 13:15:16.380 | INFO     | x20launcher.bridge.self_update_bridge:__init__:44 - SelfUpdateBridge init start
+2025-01-17 13:15:16.380 | INFO     | x20launcher.bridge.self_update_bridge:__init__:49 - SelfUpdateBridge init finish
+2025-01-17 13:15:16.380 | INFO     | x20launcher.bridge.download_bridge:__init__:130 - DownloadBridge init start
+2025-01-17 13:15:16.381 | INFO     | x20launcher.bridge.download_bridge:__init__:155 - DownloadBridge init finish
+2025-01-17 13:15:16.381 | INFO     | x20launcher.bridge.repair_bridge:__init__:44 - RepairBridge init start
+2025-01-17 13:15:16.381 | INFO     | x20launcher.bridge.repair_bridge:__init__:53 - RepairBridge init finish
+2025-01-17 13:15:16.381 | INFO     | x20launcher.bridge.settings_bridge:__init__:41 - SettingsBridge init start
+2025-01-17 13:15:16.439 | INFO     | x20launcher.bridge.settings_bridge:__init__:83 - SettingsBridge init finish
+2025-01-17 13:15:16.478 | INFO     | x20launcher.qt_qml.utils:message_handler:19 - qml: MainWindowLazyLoadItem Completed
+2025-01-17 13:15:16.485 | INFO     | x20launcher.qt_qml.utils:message_handler:19 - qml: BaseView lazyLoad
+2025-01-17 13:15:16.500 | INFO     | x20launcher.qt_qml.utils:message_handler:19 - qml: BaseViewLazyLoadItem Ready
+2025-01-17 13:15:17.097 | INFO     | x20launcher.utils.drpf:send_drpf_impl:92 - [WhoamiResultSucceed] Send drpf success
+2025-01-17 13:15:19.230 | INFO     | x20launcher.qt_qml.utils:message_handler:19 - qml: BaseViewLazyLoadItem Completed
+2025-01-17 13:15:19.261 | INFO     | x20launcher.bridge.download_bridge:_clear_outdate_game_log:265 - Clear LegacySaved
+2025-01-17 13:15:19.261 | INFO     | x20launcher.bridge.download_bridge:_start_poll_check_game_exe_impl:208 - Check game D:\dashbaord\my-dashboard\src-tauri\MarvelGame\Marvel.exe is exists: False, and version is 
+2025-01-17 13:15:19.262 | INFO     | x20launcher.bridge.download_bridge:_clear_outdate_game_log:270 - Clear outdate game log
+2025-01-17 13:15:19.371 | INFO     | x20launcher.qt_qml.utils:message_handler:19 - qml: SettingsDialog Completed
+2025-01-17 13:15:19.372 | INFO     | x20launcher.qt_qml.utils:message_handler:19 - qml: BaseCombobox Completed
+2025-01-17 13:15:19.372 | INFO     | x20launcher.qt_qml.utils:message_handler:19 - qml: QuitDialog Completed
+2025-01-17 13:15:19.372 | INFO     | x20launcher.qt_qml.utils:message_handler:19 - qml: DownloadProgress Completed
+2025-01-17 13:15:19.372 | INFO     | x20launcher.qt_qml.utils:message_handler:19 - qml: SelfUpdateView Completed
+2025-01-17 13:15:19.372 | INFO     | x20launcher.launcher_application:check_headcode:729 - start check headcode
+2025-01-17 13:15:19.373 | INFO     | x20launcher.launcher_application:check_headcode:749 - start try get headcode content
+2025-01-17 13:15:19.373 | INFO     | x20launcher.utils.multithread_request:send_requests:47 - Start making multi requests
+2025-01-17 13:15:19.374 | INFO     | x20launcher.utils.multithread_request:send_get_request:26 - start sending request: https://x20na.gph.easebar.com/headcode/launcher/steam/headcode_create_steam_id_txt
+2025-01-17 13:15:19.374 | INFO     | x20launcher.utils.multithread_request:send_get_request:26 - start sending request: https://x20na.gph.easebar.com/headcode/launcher/steam/headcode_clear_fulldump
+2025-01-17 13:15:19.375 | INFO     | x20launcher.utils.multithread_request:send_get_request:26 - start sending request: https://x20na.gph.easebar.com/headcode/launcher/steam/headcode_del_who_env
+2025-01-17 13:15:19.376 | INFO     | x20launcher.utils.multithread_request:send_get_request:26 - start sending request: https://x20na.gph.easebar.com/headcode/launcher/steam/headcode_start_game1
+2025-01-17 13:15:19.485 | INFO     | x20launcher.qt_qml.utils:message_handler:19 - qml: createWebViewTimer onTriggered
+2025-01-17 13:15:19.487 | INFO     | x20launcher.qt_qml.utils:message_handler:19 - qml: BaseView webViewComponent create
+2025-01-17 13:15:19.487 | INFO     | x20launcher.qt_qml.utils:message_handler:19 - qml: BaseView webViewComponent Ready
+2025-01-17 13:15:19.661 | INFO     | x20launcher.qt_qml.utils:message_handler:19 - qml: BaseView webViewObj create success!
+2025-01-17 13:15:20.806 | INFO     | x20launcher.launcher_application:check_headcode:772 - start exec headcode headcode_create_steam_id_txt
+2025-01-17 13:15:20.806 | INFO     | x20launcher.launcher_application:<module>:20 - Create steam id txt start
+2025-01-17 13:15:20.806 | ERROR    | x20launcher.launcher_application:create_steam_id_txt:16 - Failed to create D:\dashbaord\my-dashboard\src-tauri\MarvelGame\Marvel\Binaries\Win64\steam_appid.txt, Error: [Errno 2] No such file or directory: 'D:\\dashbaord\\my-dashboard\\src-tauri\\MarvelGame\\Marvel\\Binaries\\Win64\\steam_appid.txt'
+2025-01-17 13:15:20.806 | INFO     | x20launcher.launcher_application:<module>:22 - Create steam id txt done
+2025-01-17 13:15:20.813 | INFO     | x20launcher.launcher_application:check_headcode:772 - start exec headcode headcode_clear_fulldump
+2025-01-17 13:15:20.813 | INFO     | x20launcher.launcher_application:headcode_clear_fulldump:2 - Start clear fulldump
+2025-01-17 13:15:20.814 | INFO     | x20launcher.launcher_application:headcode_clear_fulldump:31 - End clear fulldump
+2025-01-17 13:15:20.814 | INFO     | x20launcher.launcher_application:check_headcode:772 - start exec headcode headcode_del_who_env
+2025-01-17 13:15:20.815 | INFO     | x20launcher.launcher_application:<module>:7 - After deletion:
+2025-01-17 13:15:20.834 | INFO     | x20launcher.launcher_application:check_headcode:772 - start exec headcode headcode_start_game1
+2025-01-17 13:15:21.315 | INFO     | x20launcher.utils.drpf:send_drpf_impl:92 - [OpenLauncher] Send drpf success
+2025-01-17 13:15:32.703 | INFO     | x20launcher.launcher_application:exec:1227 - ********************************* End, return code: 0 *********************************
+
+[2025-01-17 13:15:14.749] [launcher] [info] LauncherApplication initialize
+[2025-01-17 13:15:14.765] [launcher] [info] "D:\\dashbaord\\my-dashboard\\src-tauri\\temp\\.updater" deleted successfully.

@@ -1,0 +1,3 @@
+2025-01-18T06:43:17Z, 9724: Launcher cannot find wallpaper32.exe/wallpaper64.exe at path: D:/dashbaord/my-dashboard/src-tauri/launcher.exe.
+
+Usually this means your anti-virus deleted Wallpaper Engine files by mistake. Configure your anti-virus to ignore the directory and reinstall Wallpaper Engine

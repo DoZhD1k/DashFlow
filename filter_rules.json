@@ -1,0 +1,33 @@
+{
+  "global_excluded": [
+    "crashreportclient.exe",
+    "unrealcefsubprocess.exe",
+    "steamwebhelper.exe",
+    "unitycrashhandler64.exe",
+    "dxsetup.exe",
+    "vcredist_x64.exe",
+    "setup.exe",
+    "installer.exe",
+    "diagnostics64.exe",
+    "cleanup.exe",
+    "resourcecompiler.exe",
+    "support.exe",
+    "activationui.exe"
+  ],
+  "launchers": {
+    "Steam": {
+      "excluded_paths": [
+        "steamworks",
+        "_commonredist",
+        "redist",
+        "extras",
+        "binaries",
+        "bin",
+        "__installer",
+        "distribution",
+        "unitycrashhandler"
+      ],
+      "required_keywords": []
+    }
+  }
+}

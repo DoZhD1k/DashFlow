@@ -1,0 +1,43 @@
+2025-01-17 22:16:22.347 | INFO     | x20launcher.launcher_application:__init__:1193 - ********************************* Start *********************************
+2025-01-17 22:16:22.347 | INFO     | x20launcher.launcher_application:__init__:1194 - X20Launcher init start
+2025-01-17 22:16:22.347 | INFO     | x20launcher.launcher_application:__init__:1196 - init log
+2025-01-17 22:16:22.362 | INFO     | x20launcher.launcher_application:exec:1200 - Launcher version is 1.4.427
+2025-01-17 22:16:22.363 | INFO     | x20launcher.launcher_application:__init__:1115 - Application init start
+2025-01-17 22:16:22.865 | INFO     | x20launcher.launcher_application:launch_record:1179 - Launch record
+2025-01-17 22:16:22.865 | INFO     | x20launcher.launcher_application:launch_record:1182 - is wrong env
+2025-01-17 22:16:22.866 | INFO     | x20launcher.launcher_application:__init__:80 - QMLContext init start
+2025-01-17 22:16:22.866 | INFO     | x20launcher.launcher_application:__init__:89 - Verify invite code success. don't need invite code
+2025-01-17 22:16:22.867 | INFO     | x20launcher.launcher_application:update_region:348 - Language: ru_RU, Encoding: cp1252
+2025-01-17 22:16:22.867 | INFO     | x20launcher.launcher_application:update_region:353 - Local Timezone Offset: 5.0 hours
+2025-01-17 22:16:22.867 | INFO     | x20launcher.launcher_application:check_offline_marker:694 - offline marker time is 1737134182.8668141, current time:1737134182.8678143, offline marker timeout is 86400
+2025-01-17 22:16:22.867 | INFO     | x20launcher.launcher_application:check_local_ip:288 - requesting whoami URL: https://who.easebar.com/v2
+2025-01-17 22:51:07.649 | INFO     | x20launcher.launcher_application:__init__:1193 - ********************************* Start *********************************
+2025-01-17 22:51:07.649 | INFO     | x20launcher.launcher_application:__init__:1194 - X20Launcher init start
+2025-01-17 22:51:07.649 | INFO     | x20launcher.launcher_application:__init__:1196 - init log
+2025-01-17 22:51:07.653 | INFO     | x20launcher.launcher_application:exec:1200 - Launcher version is 1.4.427
+2025-01-17 22:51:07.654 | INFO     | x20launcher.launcher_application:__init__:1115 - Application init start
+2025-01-17 22:51:08.013 | INFO     | x20launcher.launcher_application:launch_record:1179 - Launch record
+2025-01-17 22:51:08.013 | INFO     | x20launcher.launcher_application:launch_record:1182 - is wrong env
+2025-01-17 22:51:08.013 | INFO     | x20launcher.launcher_application:__init__:80 - QMLContext init start
+2025-01-17 22:51:08.013 | INFO     | x20launcher.launcher_application:__init__:89 - Verify invite code success. don't need invite code
+2025-01-17 22:51:08.014 | INFO     | x20launcher.launcher_application:update_region:348 - Language: ru_RU, Encoding: cp1252
+2025-01-17 22:51:08.014 | INFO     | x20launcher.launcher_application:update_region:353 - Local Timezone Offset: 5.0 hours
+2025-01-17 22:51:08.014 | INFO     | x20launcher.launcher_application:check_offline_marker:694 - offline marker time is 1737136268.01403, current time:1737136268.01403, offline marker timeout is 86400
+2025-01-17 22:51:08.015 | INFO     | x20launcher.launcher_application:check_local_ip:288 - requesting whoami URL: https://who.easebar.com/v2
+2025-01-17 22:51:08.764 | INFO     | x20launcher.launcher_application:check_local_ip:295 - whoami ret code: 200, setting env GAME_UNISDK_AIM_INFO
+2025-01-17 22:51:08.764 | INFO     | x20launcher.launcher_application:update_region:381 - rg is V4r@
+2025-01-17 22:51:08.764 | INFO     | x20launcher.launcher_application:update_region:388 - loc is NA
+2025-01-17 22:51:08.779 | INFO     | x20launcher.launcher_application:__init__:116 - set orbit project id x20na
+2025-01-17 22:51:08.801 | INFO     | x20launcher.launcher_application:check_offline_marker:694 - offline marker time is 1737136268.01403, current time:1737136268.8015065, offline marker timeout is 86400
+2025-01-17 22:51:08.801 | INFO     | x20launcher.launcher_application:fire_download_patchlists:708 - Start download multi patchlists
+2025-01-17 22:51:08.801 | INFO     | x20launcher.utils.multithread_request:send_requests:47 - Start making multi requests
+2025-01-17 22:51:08.803 | INFO     | x20launcher.utils.multithread_request:send_get_request:26 - start sending request: https://x20na.update.easebar.com/pl/launcher_headcode_steam
+2025-01-17 22:51:08.803 | INFO     | x20launcher.utils.multithread_request:send_get_request:26 - start sending request: https://x20na.update.easebar.com/pl/launcher_release_steam
+2025-01-17 22:51:08.804 | INFO     | x20launcher.utils.multithread_request:send_get_request:26 - start sending request: https://x20na.update.easebar.com/pl/pc_release_steam
+2025-01-17 22:51:08.805 | INFO     | x20launcher.utils.multithread_request:send_get_request:26 - start sending request: https://x20na.update.easebar.com/pl/meta_steam
+2025-01-17 22:51:08.806 | INFO     | x20launcher.launcher_application:__init__:167 - QMLContext init finish
+2025-01-17 22:51:08.807 | INFO     | x20launcher.launcher_application:__init__:1138 - Application init finish
+2025-01-17 22:51:08.807 | INFO     | x20launcher.bridge.self_update_bridge:__init__:44 - SelfUpdateBridge init start
+2025-01-17 22:51:08.807 | INFO     | x20launcher.bridge.self_update_bridge:__init__:49 - SelfUpdateBridge init finish
+2025-01-17 22:51:08.808 | INFO     | x20launcher.bridge.download_bridge:__init__:130 - DownloadBridge init start
+2025-01-17 22:51:08.808 | INFO     | x20launcher.bridge.download_bridge:__init__:155 - DownloadBridge init finish

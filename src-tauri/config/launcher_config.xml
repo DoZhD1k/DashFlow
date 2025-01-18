@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+	<Settings>
+		<close_type>0</close_type>
+		<show_quit_dialog>False</show_quit_dialog>
+		<show_check_game_crash_dialog>True</show_check_game_crash_dialog>
+		<show_check_cpu_name_dialog>True</show_check_cpu_name_dialog>
+		<language>0</language>
+		<language_code>en</language_code>
+		<exit_after_start_game>True</exit_after_start_game>
+		<start_game_with_gpu_debug_mode>False</start_game_with_gpu_debug_mode>
+		<default_language>en</default_language>
+	</Settings>
+</root>
