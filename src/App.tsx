@@ -6,6 +6,8 @@ import { Games } from "./pages/Games";
 import { Notes } from "./pages/Notes";
 import { Projects } from "./pages/Projects";
 import { Music } from "./pages/Music";
+import { Profiles } from "./pages/Profiles";
+
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -42,6 +44,7 @@ function App() {
           <Route path="/notes" element={<Notes />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/music" element={<Music />} />
+          <Route path="/profiles" element={<Profiles />} />
         </Routes>
       </Layout>
     </BrowserRouter>

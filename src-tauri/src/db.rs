@@ -20,10 +20,40 @@ pub struct Todo {
     pub completed: bool,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Link {
+    pub id: i64, 
+    pub name: String,
+    pub icon: String,
+    pub href: String,
+    pub icon_color: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Profile {
+    pub id: i64,         // ID профиля
+    pub name: String,    // Имя профиля
+    pub login: String,   // Логин
+    pub password: String // Пароль
+}
+
+
+#[derive(Serialize)]
+pub struct Note {
+    id: i64,
+    title: String,
+    content: String,
+    #[serde(rename = "createdAt")]
+    created_at: String,
+    #[serde(rename = "updatedAt")]
+    updated_at: String,
+}
+
+
 pub fn init_db() -> Result<Connection, String> {
     let conn = Connection::open("projects.db").map_err(|e| e.to_string())?;
-    // let conn = Connection::open("/data/db.db")?;
-
+    
+    // Создание таблиц
     conn.execute(
         "CREATE TABLE IF NOT EXISTS projects (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,6 +63,7 @@ pub fn init_db() -> Result<Connection, String> {
         )",
         [],
     ).map_err(|e| e.to_string())?;
+    
     conn.execute(
         "CREATE TABLE IF NOT EXISTS todos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,6 +73,7 @@ pub fn init_db() -> Result<Connection, String> {
         )",
         [],
     ).map_err(|e| e.to_string())?;
+    
     conn.execute(
         "CREATE TABLE IF NOT EXISTS games (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -58,7 +90,62 @@ pub fn init_db() -> Result<Connection, String> {
         )",
         [],
     ).map_err(|e| e.to_string())?;
-    Ok(conn)
+    
+    // Создание таблицы links
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS links (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            icon TEXT NOT NULL,
+            href TEXT NOT NULL,
+            icon_color TEXT NOT NULL DEFAULT '#000000'
+        )",
+        [],
+    )
+    .map_err(|e| e.to_string())?;
+
+     conn.execute(
+        "CREATE TABLE IF NOT EXISTS profiles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            login TEXT NOT NULL,
+            password TEXT NOT NULL,
+            note TEXT
+        )",
+        [],
+    )
+    .map_err(|e| e.to_string())?;
+
+    // Создание таблицы заметок
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS notes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )",
+        [],
+    ).map_err(|e| e.to_string())?;
+    
+    // Проверяем, существует ли столбец icon_color
+    if !column_exists(&conn, "links", "icon_color") {
+        // Добавляем столбец icon_color
+        conn.execute(
+            "ALTER TABLE links ADD COLUMN icon_color TEXT NOT NULL DEFAULT '#000000'",
+            [],
+        )
+        .map_err(|e| {
+            if e.to_string().contains("duplicate column name") {
+                // Столбец уже существует, игнорируем ошибку
+                e.to_string()
+            } else {
+                e.to_string()
+            }
+        })?;
+    }
+    
+    Ok(conn) // Возвращаем соединение
 }
 
 pub fn add_project(name: String, path: String, description: String) -> Result<i64, String> {
@@ -225,4 +312,184 @@ pub fn get_game_by_name(
     }
 
     Ok(game)
+}
+
+
+pub fn get_links() -> Result<Vec<Link>, String> {
+    let conn = init_db()?;
+    let mut stmt = conn.prepare("SELECT id, name, icon, href, icon_color FROM links")
+        .map_err(|e| e.to_string())?;
+
+    let links_iter = stmt.query_map([], |row| {
+        Ok(Link {
+            id: row.get(0)?,
+            name: row.get(1)?,
+            icon: row.get(2)?,
+            href: row.get(3)?,
+            icon_color: row.get(4)?,
+        })
+    })
+    .map_err(|e| e.to_string())?;
+
+    let mut links = Vec::new();
+    for link in links_iter {
+        links.push(link.map_err(|e| e.to_string())?);
+    }
+
+    Ok(links)
+}
+
+pub fn add_link(name: String, icon: String, href: String, icon_color: String) -> Result<(), String> {
+    let conn = init_db()?;
+    conn.execute(
+        "INSERT INTO links (name, icon, href, icon_color) VALUES (?1, ?2, ?3, ?4)",
+        params![name, icon, href, icon_color],
+    ).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+fn column_exists(conn: &Connection, table: &str, column: &str) -> bool {
+    let mut stmt = conn.prepare(&format!("PRAGMA table_info({})", table)).unwrap();
+    let column_info_iter = stmt.query_map([], |row| {
+        let name: String = row.get(1)?;
+        Ok(name)
+    }).unwrap();
+
+    for column_info in column_info_iter {
+        if let Ok(col_name) = column_info {
+            if col_name == column {
+                return true;
+            }
+        }
+    }
+    false
+}
+
+pub fn update_link(
+    id: i64,
+    name: String,
+    icon: String,
+    href: String,
+    icon_color: String,
+) -> Result<(), String> {
+    let conn = init_db()?;
+    conn.execute(
+        "UPDATE links SET name = ?1, icon = ?2, href = ?3, icon_color = ?4 WHERE id = ?5",
+        params![name, icon, href, icon_color, id],
+    )
+    .map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+pub fn delete_link(id: i64) -> Result<(), String> {
+    let conn = init_db()?;
+    conn.execute(
+        "DELETE FROM links WHERE id = ?1",
+        params![id],
+    )
+    .map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+
+// Добавление профиля
+pub fn add_profile(name: &str, login: &str, password: &str, note: Option<&str>) -> Result<(), String> {
+    let conn = init_db()?;
+    conn.execute(
+        "INSERT INTO profiles (name, login, password, note) VALUES (?1, ?2, ?3, ?4)",
+        params![name, login, password, note],
+    )
+    .map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+// Обновление профиля
+pub fn update_profile(id: i64, name: &str, login: &str, password: &str, note: Option<&str>) -> Result<(), String> {
+    let conn = init_db()?;
+    conn.execute(
+        "UPDATE profiles SET name = ?1, login = ?2, password = ?3, note = ?4 WHERE id = ?5",
+        params![name, login, password, note, id],
+    )
+    .map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+// Удаление профиля
+pub fn delete_profile(id: i64) -> Result<(), String> {
+    let conn = init_db()?;
+    conn.execute("DELETE FROM profiles WHERE id = ?1", params![id])
+        .map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+// Получение всех профилей
+pub fn get_profiles() -> Result<Vec<Profile>, String> {
+    let conn = Connection::open("projects.db").map_err(|e| e.to_string())?;
+    let mut stmt = conn
+        .prepare("SELECT id, name, login, password FROM profiles")
+        .map_err(|e| e.to_string())?;
+
+    let profiles_iter = stmt
+        .query_map([], |row| {
+            Ok(Profile {
+                id: row.get(0)?,
+                name: row.get(1)?,
+                login: row.get(2)?,
+                password: row.get(3)?,
+            })
+        })
+        .map_err(|e| e.to_string())?;
+
+    let profiles: Vec<Profile> = profiles_iter.collect::<Result<_, _>>().map_err(|e| e.to_string())?;
+    Ok(profiles)
+}
+
+
+// Функции для работы с заметками
+pub fn add_note(title: &str, content: &str) -> Result<(), String> {
+    let conn = init_db()?;
+    conn.execute(
+        "INSERT INTO notes (title, content) VALUES (?, ?)",
+        [title, content],
+    ).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+pub fn get_notes() -> Result<Vec<Note>, String> {
+    let conn = init_db()?;
+    let mut stmt = conn.prepare("SELECT id, title, content, created_at, updated_at FROM notes")
+        .map_err(|e| e.to_string())?;
+    let notes_iter = stmt.query_map([], |row| {
+        Ok(Note {
+            id: row.get(0)?,
+            title: row.get(1)?,
+            content: row.get(2)?,
+            created_at: row.get(3)?,
+            updated_at: row.get(4)?,
+        })
+    }).map_err(|e| e.to_string())?;
+
+    let mut notes = Vec::new();
+    for note in notes_iter {
+        notes.push(note.map_err(|e| e.to_string())?);
+    }
+    Ok(notes)
+}
+
+
+
+pub fn update_note(id: i64, title: &str, content: &str) -> Result<(), String> {
+    let conn = init_db()?;
+    conn.execute(
+        "UPDATE notes SET title = ?, content = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        [title, content, &id.to_string()],
+    ).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+pub fn delete_note(id: i64) -> Result<(), String> {
+    let conn = init_db()?;
+    conn.execute("DELETE FROM notes WHERE id = ?", [id])
+        .map_err(|e| e.to_string())?;
+    Ok(())
 }

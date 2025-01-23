@@ -22,6 +22,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
     "framer-motion": "^11.18.0",
     "gsap": "^3.12.5",
     "lucide-react": "^0.471.1",

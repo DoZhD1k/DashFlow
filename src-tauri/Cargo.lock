@@ -2355,6 +2355,7 @@ dependencies = [
 name = "my-dashboard"
 version = "0.1.0"
 dependencies = [
+ "base64 0.21.7",
  "chrono",
  "dotenv",
  "env_logger",
@@ -2373,6 +2374,7 @@ dependencies = [
  "tokio",
  "walkdir",
  "webbrowser",
+ "windows 0.48.0",
 ]
 
 [[package]]
@@ -4119,7 +4121,7 @@ dependencies = [
  "tao-macros",
  "unicode-segmentation",
  "url",
- "windows",
+ "windows 0.58.0",
  "windows-core 0.58.0",
  "windows-version",
  "x11-dl",
@@ -4189,7 +4191,7 @@ dependencies = [
  "webkit2gtk",
  "webview2-com",
  "window-vibrancy",
- "windows",
+ "windows 0.58.0",
 ]
 
 [[package]]
@@ -4290,7 +4292,7 @@ dependencies = [
  "tauri-plugin",
  "thiserror 2.0.11",
  "url",
- "windows",
+ "windows 0.58.0",
  "zbus",
 ]
 
@@ -4310,7 +4312,7 @@ dependencies = [
  "tauri-utils",
  "thiserror 2.0.11",
  "url",
- "windows",
+ "windows 0.58.0",
 ]
 
 [[package]]
@@ -4335,7 +4337,7 @@ dependencies = [
  "url",
  "webkit2gtk",
  "webview2-com",
- "windows",
+ "windows 0.58.0",
  "wry",
 ]
 
@@ -5071,7 +5073,7 @@ checksum = "823e7ebcfaea51e78f72c87fc3b65a1e602c321f407a0b36dbb327d7bb7cd921"
 dependencies = [
  "webview2-com-macros",
  "webview2-com-sys",
- "windows",
+ "windows 0.58.0",
  "windows-core 0.58.0",
  "windows-implement",
  "windows-interface",
@@ -5095,7 +5097,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a82bce72db6e5ee83c68b5de1e2cd6ea195b9fbff91cb37df5884cbe3222df4"
 dependencies = [
  "thiserror 1.0.69",
- "windows",
+ "windows 0.58.0",
  "windows-core 0.58.0",
 ]
 
@@ -5148,6 +5150,15 @@ dependencies = [
  "raw-window-handle",
  "windows-sys 0.59.0",
  "windows-version",
+]
+
+[[package]]
+name = "windows"
+version = "0.48.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e686886bc078bc1b0b600cac0147aadb815089b6e4da64016cbd754b6342700f"
+dependencies = [
+ "windows-targets 0.48.5",
 ]
 
 [[package]]
@@ -5608,7 +5619,7 @@ dependencies = [
  "webkit2gtk",
  "webkit2gtk-sys",
  "webview2-com",
- "windows",
+ "windows 0.58.0",
  "windows-core 0.58.0",
  "windows-version",
  "x11-dl",

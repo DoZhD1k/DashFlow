@@ -10,6 +10,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Music,
+  UsersRound,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -29,6 +30,11 @@ const navItems = [
     icon: <ListChecks className="w-5 h-5" />,
   },
   { to: "/music", label: "Музыка", icon: <Music className="w-5 h-5" /> },
+  {
+    to: "/profiles",
+    label: "Профили",
+    icon: <UsersRound className="w-5 h-5" />,
+  },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({
