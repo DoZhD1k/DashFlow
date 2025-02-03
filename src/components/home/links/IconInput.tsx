@@ -25,7 +25,7 @@ const IconInput: React.FC<IconInputProps> = ({ icon, onIconChange }) => {
         value={icon}
         onChange={(e) => onIconChange(e.target.value)}
         list="icon-list"
-        className="w-full p-2 border border-gray-300 rounded mt-1 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none"
+        className="border border-gray-300 rounded w-full p-2 mt-1 bg-transparent"
         placeholder="Введите название иконки (например, Github)"
         required
       />

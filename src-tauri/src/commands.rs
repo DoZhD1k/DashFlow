@@ -5,14 +5,22 @@ use log::info;
 use crate::games::{detection, rawg};
 use crate::games::DetectedGame;
 use crate::db;
-use crate::music::spotify::{
-    exchange_code, get_refresh_token, search_track, get_current_track, play_track,
-    get_user_profile, get_user_playlist, get_playlist_track, pause_playback,
-    skip_track, previous_track, get_authorize_url, handle_auth_callback, 
-    fetch_albums_from_spotify, 
+use std::fs::{create_dir_all, File};
+use std::io::Write;
+use dirs_next::home_dir;
+use sysinfo::{ System, SystemExt};
+use crate::music::audius::{
+    search_tracks_audius,
+    search_playlists_audius,
+    get_playlist_tracks_audius,
+    get_track_stream_url, get_trending_tracks,
 };
-
 use reqwest::Client;
+use serde_json::json;
+use serde_json::Value;
+use std::env;
+
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -107,10 +115,8 @@ pub fn delete_todo(id: i64) -> Result<(), String> {
 
 /// Команда Tauri: сканировать игры и получить данные из RAWG.
 #[command]
-pub async fn scan_and_fetch_games(
-    state: tauri::State<'_, String>,
-) -> Result<Vec<DetectedGame>, String> {
-    let api_key = state.inner();
+pub async fn scan_and_fetch_games() -> Result<Vec<DetectedGame>, String> {
+    let rawg_api_key = env::var("RAWG_API_KEY").unwrap_or_else(|_| "NO_API_KEY".to_string());
     let mut games = detection::scan_for_games()?; // Сканируем игры локально
     let client = rawg::create_client();
 
@@ -131,7 +137,7 @@ pub async fn scan_and_fetch_games(
         }
 
         // Если игры нет в БД, запрашиваем RAWG API
-        if let Some(rawg_games) = rawg::fetch_games(&client, api_key, game_name_ref)
+        if let Some(rawg_games) = rawg::fetch_games(&client, &rawg_api_key, game_name_ref)
             .await
             .ok()
         {
@@ -140,7 +146,7 @@ pub async fn scan_and_fetch_games(
 
                 // Получаем детальную информацию об игре
                 if let Some(details) =
-                    rawg::fetch_game_details(&client, api_key, first_game.id).await.ok()
+                    rawg::fetch_game_details(&client, &rawg_api_key, first_game.id).await.ok()
                 {
                     game.description = details.description_raw.clone();
                     game.cover = details.background_image.clone();
@@ -166,202 +172,187 @@ pub async fn scan_and_fetch_games(
     Ok(games)
 }
 
-
-#[tauri::command]
-pub async fn exchange_codes(code: String, redirect_uri: String) -> Result<String, String> {
-    let response = exchange_code(code, redirect_uri).await?;
-    Ok(serde_json::to_string(&response).map_err(|e| e.to_string())?)
-}
-
-#[tauri::command]
-pub async fn refresh_tokens(refresh_token: String) -> Result<String, String> {
-    let response = get_refresh_token(refresh_token).await?;
-    Ok(serde_json::to_string(&response).map_err(|e| e.to_string())?)
-}
-
-#[tauri::command]
-pub async fn get_user_profiles(access_token: String) -> Result<String, String> {
-    get_user_profile(access_token).await
-}
-
-#[tauri::command]
-pub async fn search_tracks(query: String, access_token: String) -> Result<String, String> {
-    search_track(query, access_token).await
-}
-
-#[tauri::command]
-pub async fn get_current_tracks(access_token: String) -> Result<String, String> {
-    get_current_track(access_token).await
-}
-
-#[tauri::command]
-pub async fn get_user_playlists(access_token: String) -> Result<String, String> {
-    get_user_playlist(access_token).await
-}
-
-#[tauri::command]
-pub async fn get_playlist_tracks(playlist_id: String, access_token: String) -> Result<String, String> {
-    get_playlist_track(playlist_id, access_token).await
-}
-
-#[tauri::command]
-pub async fn play_tracks(track_uri: String, client_id: String) -> Result<(), String> {
-    // play_track(track_uri, client_id).await
-    Err("SoundCloud API не поддерживает эту функцию.".to_string())
-}
-
-#[tauri::command]
-pub async fn pause_playbacks(access_token: String) -> Result<(), String> {
-    pause_playback(access_token).await
-}
-
-#[tauri::command]
-pub async fn skip_tracks(access_token: String) -> Result<(), String> {
-    skip_track(access_token).await
-}
-
-#[tauri::command]
-pub async fn previous_tracks(access_token: String) -> Result<(), String> {
-    previous_track(access_token).await
-}
-
-#[tauri::command]
-pub async fn get_auth_url() -> String {
-        get_authorize_url().await
-}
-
-#[tauri::command]
-pub async fn auth_callback(code: String, redirect_uri: String) -> Result<String, String> {
-    handle_auth_callback(code, redirect_uri).await
-}
-
-#[tauri::command]
-pub async fn fetch_albums(access_token: String, album_ids: Vec<String>) -> Result<String, String> {
-    fetch_albums_from_spotify(access_token, album_ids).await
+/// Команда для поиска треков
+#[command]
+pub async fn search_tracks_audius_command(query: String) -> Result<Value, String> {
+    search_tracks_audius(query).await
 }
 
 #[command]
+pub async fn search_playlists_audius_command(query: String) -> Result<Value, String> {
+    search_playlists_audius(query).await
+}
+
+#[command]
+pub async fn get_playlist_tracks_audius_command(playlist_id: String) -> Result<Value, String> {
+    get_playlist_tracks_audius(playlist_id).await
+}
+
+#[command]
+pub async fn get_track_stream_url_command(track_id: String) -> Result<String, String> {
+    get_track_stream_url(track_id).await
+}
+
+#[command]
+pub async fn get_trending_tracks_command(genre: Option<String>) -> Result<Value, String> {
+    get_trending_tracks(genre).await
+}
+
+
+
+#[tauri::command]
 pub fn get_cpu_usage() -> f32 {
-    // Пример использования библиотеки sysinfo для получения загрузки CPU
-    use sysinfo::{System, SystemExt, CpuExt};
+    use std::{thread, time::Duration};
+    use sysinfo::{CpuExt, System, SystemExt};
+
+    // Создаем новый объект System и получаем первоначальные данные
     let mut sys = System::new_all();
-    sys.refresh_all();
-    let cpu = sys.global_cpu_info();
-    cpu.cpu_usage()
+    sys.refresh_cpu();
+
+    // Подождем немного, чтобы получить разницу между обновлениями
+    thread::sleep(Duration::from_millis(200));
+
+    // Обновляем данные по CPU повторно
+    sys.refresh_cpu();
+
+    // Возвращаем рассчитанное значение загрузки CPU
+    sys.global_cpu_info().cpu_usage()
 }
 
-#[command]
+#[tauri::command]
+pub fn get_battery_info() -> Result<(f32, f32), String> {
+    use battery::Manager;
+
+    // Создаем менеджер батарей
+    let manager = Manager::new().map_err(|e| e.to_string())?;
+    let mut batteries = manager.batteries().map_err(|e| e.to_string())?;
+
+    if let Some(battery_result) = batteries.next() {
+        let battery = battery_result.map_err(|e| e.to_string())?;
+        // state_of_charge() возвращает значение от 0.0 до 1.0, умножаем на 100 для процента
+        let percentage = battery.state_of_charge().value * 100.0;
+        // Время до разряда (в секундах) или 0, если значение недоступно
+let time_to_empty = battery
+    .time_to_empty()
+    .map(|d| d.get::<battery::units::time::second>())
+    .unwrap_or(0.0);        Ok((percentage, time_to_empty))
+    } else {
+        Err("Батарея не обнаружена".into())
+    }
+}
+
+#[tauri::command]
 pub fn get_memory_usage() -> (u64, u64) {
-    use sysinfo::{System, SystemExt};
-    let mut sys = System::new_all();
-    sys.refresh_memory();
+    let mut sys = System::new();
+    sys.refresh_memory(); // Обновляем только память
     (sys.used_memory(), sys.total_memory())
 }
 
-#[command]
-pub fn enable_hotspot() -> Result<String, String> {
-    // Пример: Включение хот-спота через netsh
-    // Требуются права администратора
-    let output = Command::new("netsh")
-        .args(&["wlan", "set", "hostednetwork", "mode=allow", "ssid=MyHotspot", "key=MyPassword123"])
+#[tauri::command]
+pub fn get_process_count() -> usize {
+    let mut sys = System::new();
+    sys.refresh_processes();
+    sys.processes().len()
+}
+#[tauri::command]
+pub fn get_uptime() -> u64 {
+    let mut sys = System::new();
+    sys.refresh_system();
+    sys.uptime() // время работы в секундах
+}
+
+#[tauri::command]
+pub fn restart() -> Result<String, String> {
+    let output = Command::new("shutdown")
+        .args(&["/r", "/t", "0"])
         .output()
         .map_err(|e| e.to_string())?;
-
     if output.status.success() {
-        // Запуск хот-спота
-        let start_output = Command::new("netsh")
-            .args(&["wlan", "start", "hostednetwork"])
-            .output()
-            .map_err(|e| e.to_string())?;
-
-        if start_output.status.success() {
-            Ok("Хот-спот успешно включён.".to_string())
-        } else {
-            Err(String::from_utf8_lossy(&start_output.stderr).into_owned())
-        }
+        Ok("Система перезагружается.".into())
     } else {
         Err(String::from_utf8_lossy(&output.stderr).into_owned())
     }
 }
 
-#[command]
-pub fn disable_hotspot() -> Result<String, String> {
-    // Остановка хот-спота
-    let stop_output = Command::new("netsh")
-        .args(&["wlan", "stop", "hostednetwork"])
-        .output()
+#[tauri::command]
+pub fn open_task_manager() -> Result<String, String> {
+    // Запускаем PowerShell, который в свою очередь запускает taskmgr с повышенными привилегиями.
+    // Это приведёт к появлению запроса UAC.
+    Command::new("powershell")
+        .args(&["-Command", "Start-Process", "taskmgr", "-Verb", "runAs"])
+        .spawn()
         .map_err(|e| e.to_string())?;
-
-    if stop_output.status.success() {
-        // Отключение режима хот-спота
-        let disable_output = Command::new("netsh")
-            .args(&["wlan", "set", "hostednetwork", "mode=disallow"])
-            .output()
-            .map_err(|e| e.to_string())?;
-
-        if disable_output.status.success() {
-            Ok("Хот-спот успешно отключён.".to_string())
-        } else {
-            Err(String::from_utf8_lossy(&disable_output.stderr).into_owned())
-        }
-    } else {
-        Err(String::from_utf8_lossy(&stop_output.stderr).into_owned())
-    }
+    Ok("Диспетчер задач открыт.".into())
 }
 
-/// Команда для проверки статуса хот-спота (Windows)
-#[command]
-pub fn get_hotspot_status() -> Result<bool, String> {
-    // Получение текущего статуса хот-спота
-    let output = Command::new("netsh")
-        .args(&["wlan", "show", "hostednetwork"])
+#[tauri::command]
+pub fn open_settings() -> Result<String, String> {
+    // Открываем настройки Windows через ms-settings:
+    Command::new("cmd")
+        .args(&["/c", "start", "ms-settings:"])
+        .spawn()
+        .map_err(|e| e.to_string())?;
+    Ok("Настройки Windows открыты.".into())
+}
+
+#[tauri::command]
+pub fn open_explorer() -> Result<String, String> {
+    // Открываем проводник
+    Command::new("explorer")
+        .spawn()
+        .map_err(|e| e.to_string())?;
+    Ok("Проводник открыт.".into())
+}
+
+#[tauri::command]
+pub fn lock() -> Result<String, String> {
+    let output = Command::new("rundll32.exe")
+        .args(&["user32.dll,LockWorkStation"])
         .output()
         .map_err(|e| e.to_string())?;
-
     if output.status.success() {
-        let stdout = String::from_utf8_lossy(&output.stdout);
-        if stdout.contains("Status                 : Started") {
-            Ok(true)
-        } else {
-            Ok(false)
-        }
+        Ok("Экран заблокирован.".into())
     } else {
         Err(String::from_utf8_lossy(&output.stderr).into_owned())
     }
 }
-/// Команда для перехода в спящий режим (Windows)
-#[command]
+
+#[tauri::command]
 pub fn sleep_mode() -> Result<String, String> {
-    // Использование команды rundll32 для перехода в спящий режим
+    // Попытка перевода системы в спящий режим без параметров
     let output = Command::new("rundll32")
-        .args(&["powrprof.dll,SetSuspendState", "0,1,0"])
+        .args(&["powrprof.dll,SetSuspendState", "Sleep"])
         .output()
-        .map_err(|e| e.to_string())?;
+        .map_err(|e| format!("Ошибка запуска команды: {}", e))?;
 
     if output.status.success() {
-        Ok("Система переходит в спящий режим.".to_string())
+        Ok("Система переходит в спящий режим.".into())
     } else {
-        Err(String::from_utf8_lossy(&output.stderr).into_owned())
+        Err(format!(
+            "Ошибка перехода в спящий режим: {}",
+            String::from_utf8_lossy(&output.stderr)
+        ))
     }
 }
 
-/// Команда для выключения системы (Windows)
-#[command]
-pub fn shutdown() -> Result<String, String> {
 
-    // Использование команды shutdown для выключения системы
+#[tauri::command]
+pub fn shutdown() -> Result<String, String> {
+    // Использование shutdown для выключения системы
     let output = Command::new("shutdown")
         .args(&["/s", "/t", "0"])
         .output()
-        .map_err(|e| e.to_string())?;
+        .map_err(|e| format!("Ошибка запуска команды: {}", e))?;
 
     if output.status.success() {
-        Ok("Система выключается.".to_string())
+        Ok("Система выключается.".into())
     } else {
-        Err(String::from_utf8_lossy(&output.stderr).into_owned())
+        Err(format!(
+            "Ошибка выключения системы: {}",
+            String::from_utf8_lossy(&output.stderr)
+        ))
     }
 }
-
 
 #[tauri::command]
 pub fn get_links() -> Result<Vec<db::Link>, String> {
@@ -416,8 +407,8 @@ pub fn get_profiles_command() -> Result<String, String> {
 }
 
 
-#[command]
-pub fn add_note_command(title: String, content: String) -> Result<(), String> {
+#[tauri::command]
+pub fn add_note_command(title: String, content: serde_json::Value) -> Result<(), String> {
     db::add_note(&title, &content)
 }
 
@@ -426,13 +417,227 @@ pub fn get_notes_command() -> Result<Vec<db::Note>, String> {
     db::get_notes()
 }
 
-
-#[command]
-pub fn update_note_command(id: i64, title: String, content: String) -> Result<(), String> {
+#[tauri::command]
+pub fn update_note_command(id: i64, title: String, content: serde_json::Value) -> Result<(), String> {
     db::update_note(id, &title, &content)
 }
 
-#[command]
+#[tauri::command]
 pub fn delete_note_command(id: i64) -> Result<(), String> {
     db::delete_note(id)
+}
+
+
+
+#[tauri::command]
+pub fn kanban_add_task_command(
+    title: String,
+    description: String,
+    date: Option<String>,
+    col: String
+) -> Result<i64, String> {
+    println!(
+        "Получено с фронта: title={}, description={}, date={:?}, col={}",
+        title, description, date, col
+    );
+
+    if title.trim().is_empty() {
+        return Err("Название задачи не может быть пустым.".to_string());
+    }
+    db::kanban_add_task(&title, &description, date.as_deref(), &col)
+}
+
+#[tauri::command]
+pub fn kanban_delete_task_command(id: i64) -> Result<(), String> {
+    db::kanban_delete_task(id)
+}
+
+#[tauri::command]
+pub fn kanban_update_task_command(
+    id: i64,
+    title: String,
+    description: String,
+    date: Option<String>,
+    col: String
+) -> Result<(), String> {
+    db::kanban_update_task(id, &title, &description, date.as_deref(), &col)
+}
+
+
+/// Возвращаем список задач (в виде массива кортежей)
+#[tauri::command]
+pub fn kanban_list_tasks_command()
+    -> Result<Vec<(i64, String, String, Option<String>, String, String, String)>, String>
+{
+    println!("Запрашиваем задачи...");
+    let tasks = db::kanban_list_tasks()?;
+    println!("Полученные задачи: {:?}", tasks);
+    Ok(tasks)
+}
+
+
+
+
+#[tauri::command]
+pub fn add_event_command(date: String, title: String, description: String) -> Result<(), String> {
+    db::add_event(&date, &title, &description)
+}
+
+
+#[tauri::command]
+pub fn get_events_by_date_command(date: String) -> Result<Vec<db::Event>, String> {
+    db::get_events_by_date(&date)
+}
+
+#[tauri::command]
+pub fn delete_event_command(id: i64) -> Result<(), String> {
+    db::delete_event(id)
+}
+
+#[tauri::command]
+pub fn update_event_command(id: i64, title: String, description: String) -> Result<(), String> {
+    db::update_event(id, &title, &description)
+}
+
+#[tauri::command]
+pub async fn complete_text(prompt: String) -> Result<String, String> {
+    let gemini_api_key = std::env::var("GEMINI_API_KEY")
+        .expect("GEMINI_API_KEY must be set in .env");
+
+    let api_url = format!(
+        "https://generativelanguage.googleapis.com/v1beta2/models/gemini-1.5-flash:generateContent?key={}",
+        gemini_api_key
+    );
+
+    println!("Получен запрос на генерацию текста. Prompt: {}", prompt);
+
+    let client = Client::new();
+    let response = client
+        .post(&api_url)
+        .header("Content-Type", "application/json")
+        .json(&json!({
+            "prompt": {
+                "text": prompt
+            },
+            "temperature": 0.7,
+            "candidateCount": 1
+        }))
+        .send()
+        .await;
+
+    match response {
+        Ok(resp) => {
+            // Сохраняем статус
+            let status = resp.status();
+
+            // Считываем тело ответа перед повторным использованием resp
+            let body = resp.text().await.unwrap_or_else(|_| "Пустой ответ".to_string());
+            println!("Ответ от сервера: {}", body);
+
+            if status != 200 {
+                return Err(format!("Ошибка: Статус ответа {}. Тело: {}", status, body));
+            }
+
+            // Парсим JSON
+            let json_response: serde_json::Value = match serde_json::from_str(&body) {
+                Ok(json) => json,
+                Err(e) => {
+                    println!("Ошибка парсинга JSON ответа: {}", e);
+                    return Err("Ошибка парсинга ответа от сервера".to_string());
+                }
+            };
+
+            // Извлекаем результат генерации текста
+            if let Some(generated_text) = json_response["candidates"]
+                .as_array()
+                .and_then(|candidates| candidates.get(0))
+                .and_then(|candidate| candidate["output"].as_str())
+            {
+                println!("Сгенерированный текст: {}", generated_text);
+                Ok(generated_text.to_string())
+            } else {
+                println!("Ошибка: Ответ не содержит сгенерированного текста.");
+                Err("Ответ не содержит сгенерированного текста.".to_string())
+            }
+        }
+        Err(err) => {
+            println!("Ошибка при отправке запроса: {}", err);
+            Err("Ошибка запроса к API".to_string())
+        }
+    }
+}
+
+
+#[command]
+pub fn add_home_apps(name: String, path: String) -> Result<i64, String> {
+    db::add_home_apps(name, path)
+}
+
+// Получение списка приложений
+#[command]
+pub fn get_home_apps() -> Result<Vec<db::HomeApp>, String> {
+    db::get_home_apps()
+}
+
+// Удаление приложения
+#[command]
+pub fn delete_home_app(id: i32) -> Result<(), String> {
+    db::delete_home_app(id)
+}
+
+// Запуск приложения
+#[command]
+pub fn launch_home_app(path: String) -> Result<(), String> {
+    db::launch_home_app(path)
+}
+
+#[tauri::command]
+pub fn open_dashflow_folder() -> Result<(), String> {
+    let home_dir = home_dir().ok_or("Не удалось получить домашнюю директорию")?;
+    let folder_path = home_dir.join("DashFlowVid");
+
+    if !folder_path.exists() {
+        return Err("Папка DashFlowVid не найдена".to_string());
+    }
+
+    #[cfg(target_os = "windows")]
+    let cmd = Command::new("explorer").arg(folder_path).spawn();
+
+    #[cfg(target_os = "macos")]
+    let cmd = Command::new("open").arg(folder_path).spawn();
+
+    #[cfg(target_os = "linux")]
+    let cmd = Command::new("xdg-open").arg(folder_path).spawn();
+
+    match cmd {
+        Ok(_) => Ok(()),
+        Err(e) => Err(format!("Ошибка открытия папки: {}", e)),
+    }
+}
+
+#[tauri::command]
+pub fn save_video(video_data: Vec<u8>) -> Result<String, String> {
+    let home = home_dir().ok_or("Не удалось получить домашнюю директорию")?;
+    let folder_path = home.join("DashFlowVid");
+
+    // ✅ Создаём папку, если её нет
+    if !folder_path.exists() {
+        create_dir_all(&folder_path).map_err(|e| format!("Ошибка создания папки: {}", e))?;
+    }
+
+    // ✅ Формируем путь к файлу
+    let filename = format!("recording-{}.webm", chrono::Local::now().format("%Y-%m-%d_%H-%M-%S"));
+    let file_path = folder_path.join(filename);
+
+    // ✅ Записываем файл
+    let mut file = File::create(&file_path).map_err(|e| format!("Ошибка создания файла: {}", e))?;
+    file.write_all(&video_data).map_err(|e| format!("Ошибка записи файла: {}", e))?;
+
+    Ok(file_path.to_string_lossy().to_string()) // ✅ Возвращаем путь
+}
+
+
+#[tauri::command]
+pub fn drop_games_table() -> Result<String, String> {
+    db::drop_table()
 }

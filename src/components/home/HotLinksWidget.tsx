@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
-import { getIconByName } from "./links/iconMapping";
-import * as LucideIcons from "lucide-react";
 import LinkList from "./links/LinkList";
 import AddLinkModal from "./links/AddLinkModal";
 
@@ -26,6 +24,8 @@ const predefinedColors: { name: string; value: string }[] = [
 
 const HotLinksWidget: React.FC = () => {
   const [links, setLinks] = useState<LinkItem[]>([]);
+  const [filteredLinks, setFilteredLinks] = useState<LinkItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -33,6 +33,15 @@ const HotLinksWidget: React.FC = () => {
   useEffect(() => {
     fetchLinks();
   }, []);
+
+  useEffect(() => {
+    // Фильтрация ссылок по названию
+    setFilteredLinks(
+      links.filter((link) =>
+        link.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    );
+  }, [searchQuery, links]);
 
   const fetchLinks = async () => {
     setLoading(true);
@@ -43,12 +52,12 @@ const HotLinksWidget: React.FC = () => {
       // Преобразуем ключи из snake_case в camelCase
       const formattedLinks = result.map((link) => ({
         ...link,
-        iconColor: link.icon_color, // Добавляем camelCase ключ
+        iconColor: link.icon_color,
       }));
 
       setLinks(formattedLinks);
     } catch (err: any) {
-      console.error("Ошибка при получении ссылок:", err);
+      console.error("Ошибка загрузки ссылок:", err);
       setError("Не удалось загрузить ссылки.");
     } finally {
       setLoading(false);
@@ -76,24 +85,8 @@ const HotLinksWidget: React.FC = () => {
       return;
     }
 
-    // Валидация иконки
-    const isValidIcon = Boolean(
-      getIconByName(link.icon as keyof typeof LucideIcons)
-    );
-    if (!isValidIcon) {
-      alert(
-        "Введённая иконка не найдена. Пожалуйста, проверьте название иконки."
-      );
-      return;
-    }
-
     try {
-      console.log("Добавление ссылки с аргументами:", link);
-
       const addedLink: LinkItem = await invoke("add_links", link);
-
-      console.log("Добавленная ссылка:", addedLink);
-
       setLinks((prev) => [
         ...prev,
         { ...addedLink, iconColor: addedLink.icon_color },
@@ -117,33 +110,50 @@ const HotLinksWidget: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
-      {/* Заголовок и кнопка добавления */}
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-2xl font-bold text-white">Горячие ссылки</h3>
+    <div className="p-6 bg-white dark:bg-stone-800 rounded-xl shadow-lg flex flex-col transition-shadow duration-300">
+      {/* Заголовок + Поиск */}
+      <h3 className="text-lg font-bold mb-4">Ссылки</h3>
+
+      <div className="flex justify-between items-center mb-3 text-center">
+        {/* <h3 className="text-lg font-bold">ссылки</h3> */}
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Поиск ссылок..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="text-sm w-full p-2 pl-4 pr-10 bg-transparent border-b border-gray-300 focus:outline-none placeholder-gray-400"
+          />
+          <Search className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
+        </div>
+
         <button
           onClick={() => setIsModalOpen(true)}
-          className="p-2 bg-blue-500 rounded-full hover:bg-blue-600 transition-colors"
+          className="p-2 bg-blue-500 rounded-md hover:bg-blue-600 transition"
           title="Добавить ссылку"
         >
           <Plus className="w-5 h-5 text-white" />
         </button>
       </div>
 
-      {/* Отображение ссылок */}
-      {loading ? (
-        <p className="text-white">Загрузка ссылок...</p>
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
-      ) : (
-        <LinkList
-          links={links}
-          onDelete={handleDeleteLink}
-          onOpen={openInBrowser}
-        />
-      )}
+      {/* Список ссылок с прокруткой */}
+      <div className="overflow-y-auto max-h-48 custom-scrollbar ">
+        {loading ? (
+          <p className="text-gray-400 text-sm">Загрузка...</p>
+        ) : error ? (
+          <p className="text-red-500 text-sm">{error}</p>
+        ) : filteredLinks.length === 0 ? (
+          <p className="text-gray-400 text-sm">Ничего не найдено</p>
+        ) : (
+          <LinkList
+            links={filteredLinks}
+            onDelete={handleDeleteLink}
+            onOpen={openInBrowser}
+          />
+        )}
+      </div>
 
-      {/* Модальное Окно для Добавления Ссылки */}
+      {/* Модальное окно */}
       <AddLinkModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

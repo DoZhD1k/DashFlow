@@ -11,7 +11,6 @@ interface ProfileCardProps {
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({
-  id,
   name,
   login,
   password,
@@ -30,15 +29,15 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   };
 
   return (
-    <div className="bg-white/5 shadow-md rounded-lg p-4 mb-4">
-      <h3 className="text-xl font-bold text-gray-200">{name}</h3>
+    <div className="bg-gray-100 dark:bg-stone-800 shadow-md rounded-lg p-4 mb-4">
+      <h3 className="text-xl font-bold dark:text-gray-200">{name}</h3>
 
       <div className="mt-2 flex items-center">
-        <span className="text-gray-300">Login:</span>
-        <span className="ml-2 text-gray-300">{login}</span>
+        <span className="dark:text-gray-300">Login:</span>
+        <span className="ml-2 dark:text-gray-300">{login}</span>
         <button
           onClick={() => copyToClipboard(login, "login")}
-          className="ml-2 text-gray-300 hover:text-gray-400"
+          className="ml-2 dark:text-gray-300 hover:text-gray-400"
           title="Copy Login"
         >
           {copiedField === "login" ? (
@@ -50,20 +49,20 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
       </div>
 
       <div className="mt-2 flex items-center">
-        <span className="text-gray-300">Password:</span>
-        <span className="ml-2 text-gray-300">
+        <span className="dark:text-gray-300">Password:</span>
+        <span className="ml-2 dark:text-gray-300">
           {showPassword ? password : "******"}
         </span>
         <button
           onClick={() => setShowPassword(!showPassword)}
-          className="ml-2 text-gray-300 hover:text-gray-400"
+          className="ml-2 dark:text-gray-300 hover:text-gray-400"
           title={showPassword ? "Hide Password" : "Show Password"}
         >
           {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
         </button>
         <button
           onClick={() => copyToClipboard(password, "password")}
-          className="ml-2 text-gray-300 hover:text-gray-400"
+          className="ml-2 dark:text-gray-300 hover:text-gray-400"
           title="Copy Password"
         >
           {copiedField === "password" ? (

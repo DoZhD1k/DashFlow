@@ -93,7 +93,7 @@ export const WeatherCard: React.FC = () => {
     return (
       <div
         className="
-        bg-white/5 dark:bg-white/5
+        bg-white/5 dark:bg-stone-800
         backdrop-blur-xl
         border border-white/10
         rounded-3xl
@@ -112,7 +112,7 @@ export const WeatherCard: React.FC = () => {
       className="
         relative
         w-full max-w-sm
-        bg-white/5 dark:bg-white/5
+        bg-white/5 dark:bg-stone-800
         backdrop-blur-xl
         border border-white/10
         rounded-3xl

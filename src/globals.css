@@ -32,8 +32,86 @@ body {
 
 /* Тёмная тема */
 .dark body {
-  background-color: #101010;
+  /* background-color: #101010; */
   color: #ffffff; /* светлый текст */
+}
+
+.games-container {
+  position: relative;
+  min-height: 100vh;
+  max-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Фон с эффектом размытия */
+.games-container.has-background::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-image: var(--game-cover);
+  filter: blur(6px);
+  transition: background-image 0.5s ease-in-out;
+  z-index: -1;
+}
+
+/* Градиентный фон, если игра не выбрана */
+.games-game-bg-dark {
+  background: radial-gradient(circle at center, #1a1a1a, #000);
+}
+
+/* Исправляем размытие текста */
+.drop-shadow-neon {
+  text-shadow: 0 0 10px rgba(173, 216, 230, 0.9),
+    0 0 20px rgba(173, 216, 230, 0.7), 0 0 30px rgba(0, 191, 255, 0.8);
+}
+
+.drop-shadow-md {
+  text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.6);
+}
+
+/* Анимация пульсации и свечения */
+@keyframes pulseGlow {
+  0% {
+    text-shadow: 0 0 10px rgba(173, 216, 230, 0.9),
+      0 0 20px rgba(173, 216, 230, 0.7), 0 0 30px rgba(0, 191, 255, 0.8);
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    text-shadow: 0 0 15px rgba(173, 216, 230, 1),
+      0 0 30px rgba(173, 216, 230, 0.9), 0 0 40px rgba(0, 191, 255, 1);
+    transform: scale(1.05);
+    opacity: 0.85;
+  }
+  100% {
+    text-shadow: 0 0 10px rgba(173, 216, 230, 0.9),
+      0 0 20px rgba(173, 216, 230, 0.7), 0 0 30px rgba(0, 191, 255, 0.8);
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-pulseGlow {
+  animation: pulseGlow 1.8s infinite ease-in-out;
+}
+
+/* Анимация плавного появления с размытием */
+@keyframes fadeInBlur {
+  from {
+    opacity: 0;
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+.animate-fadeInBlur {
+  animation: fadeInBlur 1s ease-in-out;
 }
 
 /* Допустим в global.css или любом другом, но внутри @layer components */
@@ -56,4 +134,326 @@ body {
   .dark .dashboard-card {
     background-color: #1a1a1a;
   }
+}
+
+/* Настройка внешнего вида скроллбара */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(107, 114, 128, 0.7); /* Серый цвет */
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(107, 114, 128, 0.9); /* Темнее при наведении */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background-color: transparent; /* Прозрачный трек */
+}
+
+.command-menu {
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  font-size: 14px;
+  max-width: 300px;
+}
+.command-menu div {
+  padding: 8px;
+  cursor: pointer;
+}
+.command-menu div:hover {
+  background: #f0f0f0;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 1.75rem;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+p {
+  font-size: 1rem;
+}
+
+.tiptap {
+  width: 100%;
+  max-height: 80vh;
+}
+
+.ProseMirror {
+  width: 100%;
+  min-height: 60vh;
+  max-height: 100%;
+  padding: 16px;
+  outline: none;
+}
+
+/* Убираем лишние отступы у контента */
+.ProseMirror p {
+  margin: 0 0 1em;
+  line-height: 1.6; /* Удобочитаемая высота строки */
+}
+
+/* Обновляем стили для таблиц */
+.ProseMirror table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 1em;
+}
+
+.ProseMirror th,
+.ProseMirror td {
+  border: 1px solid #d1d5db;
+  padding: 8px;
+  text-align: left;
+}
+
+.ProseMirror th {
+  background-color: #f3f4f6;
+  font-weight: bold;
+}
+
+/* Стили для списков */
+.ProseMirror ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.ProseMirror ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.ProseMirror li {
+  margin-bottom: 0.5rem;
+}
+
+/* Горизонтальный разделитель */
+.ProseMirror hr {
+  border: none;
+  border-top: 2px solid #d1d5db;
+  margin: 1.5rem 0;
+}
+
+/* Цитаты */
+.ProseMirror blockquote {
+  border-left: 4px solid #3d3d3e;
+  padding-left: 1rem;
+  margin-left: 0;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Таблицы */
+.ProseMirror table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.ProseMirror th,
+.ProseMirror td {
+  border: 1px solid #d1d5db;
+  padding: 8px;
+  text-align: left;
+}
+
+.ProseMirror th {
+  background-color: #f3f4f6;
+  font-weight: bold;
+}
+
+/* Блок кода */
+.ProseMirror pre {
+  background-color: #f3f4f6;
+  padding: 1rem;
+  border-radius: 8px;
+  font-family: "Fira Code", monospace;
+  font-size: 0.9rem;
+  overflow-x: auto;
+}
+
+/* Выделение текста */
+.ProseMirror ::selection {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+/* Чекбоксы */
+.ProseMirror li[data-checked="true"] > input[type="checkbox"] {
+  background-color: #10b981; /* Цвет галочки */
+  border-color: #10b981;
+}
+
+.ProseMirror li[data-checked="false"] > input[type="checkbox"] {
+  background-color: transparent;
+  border-color: #d1d5db;
+}
+
+.ProseMirror input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+/* Таблицы */
+.ProseMirror table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.ProseMirror th,
+.ProseMirror td {
+  border: 1px solid #d1d5db;
+  padding: 8px;
+  text-align: left;
+}
+
+.ProseMirror th {
+  background-color: #f3f4f6;
+  font-weight: bold;
+}
+
+/* Блок кода */
+.ProseMirror pre {
+  background-color: #f3f4f6;
+  padding: 1rem;
+  border-radius: 8px;
+  font-family: "Fira Code", monospace;
+  font-size: 0.9rem;
+  overflow-x: auto;
+}
+
+/* Выделение текста */
+.ProseMirror ::selection {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+/* Чекбоксы */
+.ProseMirror li[data-checked="true"] > input[type="checkbox"] {
+  background-color: #10b981; /* Цвет галочки */
+  border-color: #10b981;
+}
+
+.ProseMirror li[data-checked="false"] > input[type="checkbox"] {
+  background-color: transparent;
+  border-color: #d1d5db;
+}
+
+.ProseMirror input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+/* Общие стили для таблиц */
+table {
+  border-collapse: collapse;
+  margin: 0;
+  overflow: hidden;
+  table-layout: fixed;
+  width: 100%;
+}
+
+td,
+th {
+  border: 1px solid #d1d5db;
+  box-sizing: border-box;
+  min-width: 1em;
+  padding: 6px 8px;
+  position: relative;
+  vertical-align: top;
+  background-color: #ffffff; /* Фон по умолчанию */
+}
+
+th {
+  background-color: #f3f4f6;
+  font-weight: bold;
+  text-align: left;
+}
+
+/* Выделенная ячейка */
+td.selectedCell,
+th.selectedCell {
+  background-color: #bfdbfe; /* Цвет выделения (голубой) */
+  outline: 2px solid #3b82f6; /* Синяя обводка */
+  outline-offset: -2px; /* Обводка поверх границы */
+}
+
+/* Выделение для темной темы */
+.dark td.selectedCell,
+.dark th.selectedCell {
+  background-color: #44403c; /* stone-700 */
+  outline: 2px solid #292524; /* stone-800 */
+  outline-offset: -2px;
+}
+
+/* Управление ресайзом */
+.column-resize-handle {
+  background-color: #7c3aed; /* Фиолетовый */
+  bottom: 0;
+  pointer-events: none;
+  position: absolute;
+  right: -2px;
+  top: 0;
+  width: 4px;
+}
+
+/* Таблица - обертка */
+.tableWrapper {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
+
+/* Курсор для ресайза */
+.resize-cursor {
+  cursor: ew-resize;
+  cursor: col-resize;
+}
+
+/* Стиль для выделения текста */
+.ProseMirror ::selection {
+  background: rgba(59, 130, 246, 0.3); /* Цвет выделения текста */
+}
+
+/* Тёмная тема для таблиц */
+.dark .ProseMirror table {
+  background-color: #292524; /* stone-800 */
+  color: #d1d5db; /* Текст внутри таблицы */
+}
+
+.dark .ProseMirror th {
+  background-color: #44403c; /* stone-700 */
+}
+
+.dark .ProseMirror td {
+  background-color: #292524; /* stone-800 */
+}
+
+.dark .ProseMirror td.selectedCell,
+.dark .ProseMirror th.selectedCell {
+  background-color: #57534e; /* stone-600 */
+  outline: 2px solid #292524; /* stone-800 */
+  outline-offset: -2px;
 }

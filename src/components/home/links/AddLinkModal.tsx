@@ -54,20 +54,18 @@ const AddLinkModal: React.FC<AddLinkModalProps> = ({
   return (
     isOpen && (
       <Modal onClose={onClose}>
-        <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">
-          Добавить Новую Ссылку
-        </h2>
+        <h2 className="text-xl font-bold mb-4">Добавить Новую Ссылку</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Название ссылки */}
           <div>
-            <label className="block text-gray-700 dark:text-gray-200">
+            <label className="block text-gray-700 dark:text-gray-300">
               Название
             </label>
             <input
               type="text"
               value={newLink.name}
               onChange={(e) => setNewLink({ ...newLink, name: e.target.value })}
-              className="w-full p-2 border border-gray-300 rounded mt-1 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none"
+              className="border border-gray-300 rounded w-full p-2 mt-1 bg-transparent"
               placeholder="Введите название ссылки"
               required
             />
@@ -128,7 +126,7 @@ const AddLinkModal: React.FC<AddLinkModalProps> = ({
               type="url"
               value={newLink.href}
               onChange={(e) => setNewLink({ ...newLink, href: e.target.value })}
-              className="w-full p-2 border border-gray-300 rounded mt-1 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none"
+              className="border border-gray-300 rounded w-full p-2 mt-1 bg-transparent"
               placeholder="https://example.com"
               required
             />

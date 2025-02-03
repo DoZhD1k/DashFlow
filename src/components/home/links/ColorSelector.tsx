@@ -30,7 +30,8 @@ const ColorSelector: React.FC<ColorSelectorProps> = ({
         onChange={(e) => {
           onColorChange(e.target.value);
         }}
-        className="w-full p-2 border border-gray-300 rounded mt-1 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:outline-none"
+        title="Цвет заметки"
+        className="w-full p-2 border border-gray-300 rounded mt-1 bg-white dark:bg-stone-700 text-gray-800 dark:text-gray-100 focus:outline-none"
         required
       >
         {predefinedColors.map((color) => (
@@ -43,6 +44,7 @@ const ColorSelector: React.FC<ColorSelectorProps> = ({
         <input
           type="color"
           value={customColor}
+          placeholder="Цвет иконки"
           onChange={(e) => onCustomColorChange(e.target.value)}
           className="w-full h-10 p-0 border-0 mt-2"
           required

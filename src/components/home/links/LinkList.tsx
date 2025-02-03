@@ -17,7 +17,7 @@ interface LinkListProps {
 
 const LinkList: React.FC<LinkListProps> = ({ links, onDelete, onOpen }) => {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+    <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 w-full">
       {links.map((link) => (
         <LinkCard
           key={link.id}

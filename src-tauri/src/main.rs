@@ -1,6 +1,15 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
 use dotenv::dotenv;
 use std::env;
-use tauri::Manager;
+use tauri::{
+    AppHandle, Manager,
+    menu::{Menu, MenuItem},
+    tray::{TrayIconBuilder, TrayIconEvent, MouseButton, MouseButtonState},
+};
+use tauri_plugin_single_instance::init as SingleInstance;
+use tauri_plugin_autostart::{MacosLauncher, ManagerExt}; // ✅ Новый API
+use tauri_plugin_updater::UpdaterExt; // ✅ Импорт UpdaterExt (фикс ошибки)
 
 mod commands;
 mod db;
@@ -8,13 +17,73 @@ mod games;
 mod music;
 
 fn main() {
-    // Загружаем переменные окружения из .env файла
     dotenv().ok();
 
-    // Читаем переменную RAWG_API_KEY
-    let api_key = env::var("RAWG_API_KEY").expect("RAWG_API_KEY must be set in .env");
-
     tauri::Builder::default()
+        .plugin(tauri_plugin_autostart::init(
+            MacosLauncher::LaunchAgent,
+            Some(vec!["--flag1", "--flag2"]),
+        ))
+        .plugin(tauri_plugin_shell::init()) // ✅ Shell API
+        .plugin(SingleInstance(|_app, _args, _cwd| {
+            println!("⚠️ Приложение уже запущено!");
+        }))
+        .setup(|app| {
+            let app_handle = app.app_handle();
+
+            // ✅ Включаем автозапуск
+            let autostart_manager = app.autolaunch();
+            if let Err(e) = autostart_manager.enable() {
+                println!("❌ Ошибка включения автозапуска: {:?}", e);
+            } else {
+                println!("✅ Автозапуск включен!");
+            }
+
+            // 🔄 **Проверка обновлений** (ФИКС передаваемого типа)
+            let app_clone = app_handle.clone();
+            tauri::async_runtime::spawn(async move {
+                if let Err(e) = update(app_clone).await {
+                    println!("❌ Ошибка автообновления: {:?}", e);
+                }
+            });
+
+            // 🔥 **Создаём трей-меню**
+            let quit_item = MenuItem::with_id(app_handle, "quit", "Выход", true, None::<&str>)?;
+            let tray_menu = Menu::with_items(app_handle, &[&quit_item])?;
+
+            let tray = TrayIconBuilder::new()
+                .menu(&tray_menu)
+                .show_menu_on_left_click(true)
+                .on_menu_event(|app, event| match event.id.as_ref() {
+                    "quit" => {
+                        println!("Выход");
+                        app.exit(0);
+                    }
+                    _ => {
+                        println!("Обработано меню: {:?}", event.id);
+                    }
+                })
+                .on_tray_icon_event(|tray, event| match event {
+                    TrayIconEvent::Click {
+                        button: MouseButton::Left,
+                        button_state: MouseButtonState::Up,
+                        ..
+                    } => {
+                        println!("Левый клик по иконке трея");
+                        let app = tray.app_handle();
+                        if let Some(window) = app.get_webview_window("main") {
+                            let _ = window.show();
+                            let _ = window.set_focus();
+                        }
+                    }
+                    _ => {
+                        println!("Другое событие трея: {:?}", event);
+                    }
+                })
+                .build(app)?;
+
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             commands::create_project,
             commands::list_projects,
@@ -26,51 +95,91 @@ fn main() {
             commands::launch_game,
             commands::open_url,
             commands::open_in_vscode,
-            // commands::authenticate_spotify,
-            commands::search_tracks,
-            // commands::get_trending,
-            // commands::exchange_code_for_token,
-            // commands::refresh_spotify_token,
+
             commands::get_cpu_usage,
             commands::get_memory_usage,
-            commands::enable_hotspot,
-            commands::disable_hotspot,
-            commands::get_hotspot_status,
+            commands::get_process_count,
+            commands::get_uptime,
+            commands::get_battery_info,
+
+            commands::lock,
+            commands::restart,
             commands::sleep_mode,
             commands::shutdown,
+            commands::open_task_manager,
+            commands::open_settings,
+            commands::open_explorer,
+
             commands::add_links,
             commands::get_links,
             commands::update_link,
             commands::delete_link,
-            commands::exchange_codes,
-            commands::refresh_tokens,
-            commands::get_user_profiles,
-            commands::search_tracks,
-            commands::get_current_tracks,
-            commands::get_user_playlists,
-            commands::get_playlist_tracks,
-            commands::play_tracks,
-            commands::pause_playbacks,
-            commands::skip_tracks,
-            commands::previous_tracks,
-            commands::get_auth_url,
-            commands::auth_callback,
-            commands::fetch_albums,
+
+            commands::search_tracks_audius_command,
+            commands::search_playlists_audius_command,
+            commands::get_playlist_tracks_audius_command,
+            commands::get_track_stream_url_command,
+            commands::get_trending_tracks_command,
+
             commands::add_profiles,
             commands::update_profiles,
             commands::get_profiles_command,
             commands::delete_profiles,
+
             commands::add_note_command,
             commands::get_notes_command,
             commands::update_note_command,
             commands::delete_note_command,
+
+            commands::kanban_add_task_command,
+            commands::kanban_delete_task_command,
+            commands::kanban_update_task_command,
+            commands::kanban_list_tasks_command,
+
+            commands::add_event_command,
+            commands::get_events_by_date_command,
+            commands::delete_event_command,
+            commands::update_event_command,
+            commands::complete_text,
+
+            commands::add_home_apps,
+            commands::get_home_apps,
+            commands::delete_home_app,
+            commands::launch_home_app,
+            commands::open_dashflow_folder,
+            commands::save_video,
+
+            commands::drop_games_table,
         ])
-        .setup(move |app| {
-            // Передаем API-ключ в состояние приложения
-            app.manage(api_key.clone());
-            Ok(())
-        })
         .run(tauri::generate_context!())
         .expect("Ошибка запуска приложения");
 }
 
+/// 🔄 **Функция проверки обновлений**
+async fn update(app: tauri::AppHandle) -> tauri_plugin_updater::Result<()> {
+    if let Some(update) = app.updater()?.check().await? {
+        let mut downloaded = 0;
+
+        println!("🔄 Найдено обновление: {:?}", update.version);
+
+        // ✅ Скачивание и установка обновления
+        update
+            .download_and_install(
+                |chunk_length, content_length| {
+                    downloaded += chunk_length;
+                    println!("📥 Загружено {}/{}", downloaded, content_length.unwrap_or(0));
+                },
+                || {
+                    println!("✅ Загрузка завершена.");
+                },
+            )
+            .await?;
+
+        println!("✅ Обновление установлено. Перезапуск...");
+        app.restart();
+    } else {
+        println!("✅ Установлена последняя версия.");
+    }
+
+    Ok(())
+}

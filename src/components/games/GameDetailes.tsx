@@ -1,31 +1,14 @@
 import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { Play } from "lucide-react";
-
-interface Store {
-  name: string;
-  url: string;
-}
-
-interface DetectedGame {
-  name: string | null;
-  description: string | null;
-  path: string | null;
-  platform: string | null;
-  url: string | null;
-  cover: string | null;
-  genres: string[] | null; // Жанры игры
-  developers: string[] | null; // Разработчики
-  platforms: string[] | null; // Платформы
-  stores: Store[] | null; // Магазины, где можно купить
-}
+import { DetectedGame } from "~/types/types";
 
 interface GameDetailesProps {
   game: DetectedGame | null;
 }
 
 export const GameDetailes: React.FC<GameDetailesProps> = ({ game }) => {
-  const [showFullDescription, setShowFullDescription] = useState(false);
+  const [showFullDescription] = useState(false);
 
   const handleLaunch = async () => {
     if (!game || !game.path) {
@@ -48,14 +31,14 @@ export const GameDetailes: React.FC<GameDetailesProps> = ({ game }) => {
 
   const truncatedDescription =
     game.description && game.description.length > 300
-      ? `${game.description.slice(0, 300)}...`
+      ? `${game.description.slice(0, 250)}...`
       : game.description;
 
   return (
-    <div className="flex flex-col lg:flex-row mt-6 h-full gap-6">
+    <div className="flex flex-col lg:flex-row  h-full gap-6">
       {/* Левая часть: Детали */}
       <div className="p-8 text-white max-w-5xl flex-1">
-        <h2 className="text-6xl font-bold mb-4">
+        <h2 className="text-5xl font-bold mb-4">
           {game.name || "Название игры"}
         </h2>
         <p className="text-gray-300 mb-6 max-w-2xl leading-relaxed">

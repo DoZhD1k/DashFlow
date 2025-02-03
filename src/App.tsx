@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "./components/DashboardLayout";
 import { Home } from "./pages/Home";
 import { Games } from "./pages/Games";
-import { Notes } from "./pages/Notes";
-import { Projects } from "./pages/Projects";
-import { Music } from "./pages/Music";
+import Notes from "./pages/Notes";
+import Music from "./pages/Music";
 import { Profiles } from "./pages/Profiles";
+import KanbanBoard from "./pages/KanbanBoard";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -38,14 +38,18 @@ function App() {
         isSidebarCollapsed={isSidebarCollapsed}
         toggleSidebar={toggleSidebar}
       >
+        {/* <PlayerProvider> */}
+        {/* <ScreenRecordingProvider> */}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/games" element={<Games />} />
           <Route path="/notes" element={<Notes />} />
-          <Route path="/projects" element={<Projects />} />
           <Route path="/music" element={<Music />} />
           <Route path="/profiles" element={<Profiles />} />
+          <Route path="/kanban" element={<KanbanBoard />} />
         </Routes>
+        {/* </ScreenRecordingProvider> */}
+        {/* </PlayerProvider> */}
       </Layout>
     </BrowserRouter>
   );

@@ -1,8 +1,10 @@
-use rusqlite::{Connection, params};
+//db.rs
+use rusqlite::{Connection, params, Result};
 use serde::{Deserialize, Serialize};
 use crate::games::DetectedGame;
 use serde_json::to_string;
 use rusqlite::OptionalExtension;
+use std::path::PathBuf;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Project {
@@ -38,17 +40,41 @@ pub struct Profile {
 }
 
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Note {
     id: i64,
     title: String,
-    content: String,
+    content: serde_json::Value, // JSON-объект для контента
     #[serde(rename = "createdAt")]
     created_at: String,
     #[serde(rename = "updatedAt")]
     updated_at: String,
 }
 
+#[derive(Debug, serde::Serialize)]
+pub struct Event {
+    pub id: i64,                 // Уникальный идентификатор
+    pub date: String,            // Дата события
+    pub title: String,           // Название события
+    pub description: String,     // Описание события
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct HomeApp {
+    pub id: i32,
+    pub name: String,
+    pub path: String,
+}
+
+/// Функция для получения пути к нужной базе данных
+fn get_db_path(db_name: &str) -> PathBuf {
+    std::env::current_dir().unwrap().join(format!("{}.db", db_name))
+}
+
+/// Открытие соединения с нужной БД
+fn open_db(db_name: &str) -> Result<Connection> {
+    Connection::open(get_db_path(db_name))
+}
 
 pub fn init_db() -> Result<Connection, String> {
     let conn = Connection::open("projects.db").map_err(|e| e.to_string())?;
@@ -73,7 +99,7 @@ pub fn init_db() -> Result<Connection, String> {
         )",
         [],
     ).map_err(|e| e.to_string())?;
-    
+
     conn.execute(
         "CREATE TABLE IF NOT EXISTS games (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -121,12 +147,45 @@ pub fn init_db() -> Result<Connection, String> {
         "CREATE TABLE IF NOT EXISTS notes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
-            content TEXT NOT NULL,
+            content TEXT NOT NULL, -- Храним JSON как строку
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )",
         [],
     ).map_err(|e| e.to_string())?;
+
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS kanban_tasks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT,
+            date TEXT,
+            col TEXT NOT NULL, -- Колонка: 'todo', 'inProgress', 'done' и т.д.
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )",
+        [],
+    ).map_err(|e| format!("Failed to create kanban_tasks table: {}", e))?;
+
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date TEXT NOT NULL, -- Дата в формате YYYY-MM-DD
+            title TEXT NOT NULL, -- Заголовок события
+            description TEXT -- Описание события
+        )",
+        [],
+    )
+    .map_err(|e| format!("Failed to create events table: {}", e))?;
+
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS home_apps (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            path TEXT NOT NULL
+        )",
+        [],
+    ).map_err(|e| e.to_string())?;    
     
     // Проверяем, существует ли столбец icon_color
     if !column_exists(&conn, "links", "icon_color") {
@@ -446,50 +505,268 @@ pub fn get_profiles() -> Result<Vec<Profile>, String> {
 
 
 // Функции для работы с заметками
-pub fn add_note(title: &str, content: &str) -> Result<(), String> {
+pub fn add_note(title: &str, content: &serde_json::Value) -> Result<(), String> {
     let conn = init_db()?;
     conn.execute(
         "INSERT INTO notes (title, content) VALUES (?, ?)",
-        [title, content],
-    ).map_err(|e| e.to_string())?;
+        [
+            title,
+            &content.to_string(), // Сохраняем JSON как строку
+        ],
+    ).map_err(|e| format!("Failed to add note: {}", e))?;
     Ok(())
 }
 
+
 pub fn get_notes() -> Result<Vec<Note>, String> {
     let conn = init_db()?;
-    let mut stmt = conn.prepare("SELECT id, title, content, created_at, updated_at FROM notes")
-        .map_err(|e| e.to_string())?;
-    let notes_iter = stmt.query_map([], |row| {
-        Ok(Note {
-            id: row.get(0)?,
-            title: row.get(1)?,
-            content: row.get(2)?,
-            created_at: row.get(3)?,
-            updated_at: row.get(4)?,
+    let mut stmt = conn
+        .prepare("SELECT id, title, content, created_at, updated_at FROM notes")
+        .map_err(|e| format!("Failed to prepare statement: {}", e))?;
+
+    let notes_iter = stmt
+        .query_map([], |row| {
+            let content: String = row.get(2)?;
+            Ok(Note {
+                id: row.get(0)?,
+                title: row.get(1)?,
+                content: serde_json::from_str(&content)
+    .map_err(|e| rusqlite::Error::FromSqlConversionFailure(
+        content.len(),
+        rusqlite::types::Type::Text,
+        Box::new(e),
+    ))?,
+                created_at: row.get(3)?,
+                updated_at: row.get(4)?,
+            })
         })
-    }).map_err(|e| e.to_string())?;
+        .map_err(|e| format!("Failed to fetch notes: {}", e))?;
 
     let mut notes = Vec::new();
     for note in notes_iter {
-        notes.push(note.map_err(|e| e.to_string())?);
+        notes.push(note.map_err(|e| format!("Failed to parse note: {}", e))?);
     }
     Ok(notes)
 }
 
-
-
-pub fn update_note(id: i64, title: &str, content: &str) -> Result<(), String> {
+pub fn update_note(id: i64, title: &str, content: &serde_json::Value) -> Result<(), String> {
     let conn = init_db()?;
     conn.execute(
         "UPDATE notes SET title = ?, content = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-        [title, content, &id.to_string()],
-    ).map_err(|e| e.to_string())?;
+        [
+            title,
+            &content.to_string(), // Сохраняем JSON как строку
+            &id.to_string(),
+        ],
+    ).map_err(|e| format!("Failed to update note: {}", e))?;
     Ok(())
 }
 
 pub fn delete_note(id: i64) -> Result<(), String> {
     let conn = init_db()?;
-    conn.execute("DELETE FROM notes WHERE id = ?", [id])
+    conn.execute("DELETE FROM notes WHERE id = ?", [&id.to_string()])
+        .map_err(|e| format!("Failed to delete note: {}", e))?;
+    Ok(())
+}
+
+/// Добавляем новую задачу
+pub fn kanban_add_task(
+    title: &str,
+    description: &str,
+    date: Option<&str>,
+    col: &str
+) -> Result<i64, String> {
+    let conn = init_db()?;
+    println!("Добавляем задачу: title={}, description={}, date={:?}, col={}", title, description, date, col);
+
+    conn.execute(
+        "INSERT INTO kanban_tasks (title, description, date, col)
+         VALUES (?1, ?2, ?3, ?4)",
+        params![title, description, date, col],
+    ).map_err(|e| {
+        println!("Ошибка при вставке задачи: {}", e);
+        format!("Failed to insert task: {}", e)
+    })?;
+    
+    Ok(conn.last_insert_rowid())
+}
+
+
+
+/// Удаляем задачу
+pub fn kanban_delete_task(id: i64) -> Result<(), String> {
+    let conn = init_db()?;
+    conn.execute(
+        "DELETE FROM kanban_tasks WHERE id = ?1",
+        [id],
+    ).map_err(|e| format!("Failed to delete task: {}", e))?;
+    Ok(())
+}
+
+/// Обновляем задачу
+pub fn kanban_update_task(
+    id: i64,
+    title: &str,
+    description: &str,
+    date: Option<&str>,
+    col: &str
+) -> Result<(), String> {
+    let conn = init_db()?;
+    conn.execute(
+        "UPDATE kanban_tasks
+         SET title = ?1,
+             description = ?2,
+             date = ?3,
+             col = ?4,
+             updated_at = CURRENT_TIMESTAMP
+         WHERE id = ?5",
+        params![title, description, date, col, id],
+    ).map_err(|e| format!("Failed to update task: {}", e))?;
+    Ok(())
+}
+
+/// Получаем список всех задач (вернём вектор кортежей)
+pub fn kanban_list_tasks() -> Result<Vec<(i64, String, String, Option<String>, String, String, String)>, String> {
+    let conn = init_db()?;
+
+    let mut stmt = conn.prepare(
+        "SELECT id, title, description, date, col, created_at, updated_at
+         FROM kanban_tasks"
+    ).map_err(|e| e.to_string())?;
+
+    let rows = stmt.query_map([], |row| {
+        Ok((
+            row.get::<_, i64>(0)?,            // id
+            row.get::<_, String>(1)?,        // title
+            row.get::<_, String>(2)?,        // description
+            row.get::<_, Option<String>>(3)?,// date
+            row.get::<_, String>(4)?,        // col
+            row.get::<_, String>(5)?,        // created_at
+            row.get::<_, String>(6)?,        // updated_at
+        ))
+    }).map_err(|e| format!("Failed to query tasks: {}", e))?;
+
+    let mut results = Vec::new();
+    for row_result in rows {
+        let row_tuple = row_result.map_err(|e| e.to_string())?;
+        results.push(row_tuple);
+    }
+
+    Ok(results)
+}
+
+/// Добавить новое событие
+pub fn add_event(date: &str, title: &str, description: &str) -> Result<(), String> {
+    let conn = init_db()?;
+    conn.execute(
+        "INSERT INTO events (date, title, description) VALUES (?1, ?2, ?3)",
+        params![date, title, description],
+    )
+    .map_err(|e| format!("Failed to insert event: {}", e))?;
+    Ok(())
+}
+
+/// Получить события по дате
+pub fn get_events_by_date(date: &str) -> Result<Vec<Event>, String> {
+    let conn = init_db()?;
+    let mut stmt = conn
+        .prepare("SELECT id, date, title, description FROM events WHERE date = ?1")
+        .map_err(|e| format!("Failed to prepare statement: {}", e))?;
+
+    let rows = stmt
+        .query_map([date], |row| {
+            Ok(Event {
+                id: row.get(0)?,
+                date: row.get(1)?,
+                title: row.get(2)?,
+                description: row.get(3)?,
+            })
+        })
+        .map_err(|e| format!("Failed to query events: {}", e))?;
+
+    let mut events = Vec::new();
+    for event in rows {
+        events.push(event.map_err(|e| e.to_string())?);
+    }
+    Ok(events)
+}
+
+/// Удалить событие
+pub fn delete_event(id: i64) -> Result<(), String> {
+    let conn = init_db()?;
+    conn.execute("DELETE FROM events WHERE id = ?1", params![id])
+        .map_err(|e| format!("Failed to delete event: {}", e))?;
+    Ok(())
+}
+
+
+/// Обновить событие
+pub fn update_event(id: i64, title: &str, description: &str) -> Result<(), String> {
+    let conn = init_db()?;
+    conn.execute(
+        "UPDATE events SET title = ?1, description = ?2 WHERE id = ?3",
+        params![title, description, id],
+    )
+    .map_err(|e| format!("Failed to update event: {}", e))?;
+    Ok(())
+}
+
+
+
+// Функция для добавления нового приложения
+pub fn add_home_apps(name: String, path: String) -> Result<i64, String> {
+    let conn = init_db()?;
+    conn.execute(
+        "INSERT INTO home_apps (name, path) VALUES (?1, ?2)",
+        params![name, path],
+    ).map_err(|e| e.to_string())?;
+    Ok(conn.last_insert_rowid())
+}
+
+// Функция для получения всех приложений
+pub fn get_home_apps() -> Result<Vec<HomeApp>, String> {
+    let conn = init_db()?;
+    let mut stmt = conn
+        .prepare("SELECT id, name, path FROM home_apps")
+        .map_err(|e| e.to_string())?;
+    
+    let apps = stmt
+        .query_map([], |row| {
+            Ok(HomeApp {
+                id: row.get(0)?,
+                name: row.get(1)?,
+                path: row.get(2)?,
+            })
+        })
+        .map_err(|e| e.to_string())?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| e.to_string())?;
+    
+    Ok(apps)
+}
+
+// Функция для удаления приложения
+pub fn delete_home_app(id: i32) -> Result<(), String> {
+    let conn = init_db()?;
+    conn.execute("DELETE FROM home_apps WHERE id = ?1", params![id])
         .map_err(|e| e.to_string())?;
     Ok(())
+}
+
+// Функция для запуска приложения
+#[cfg(target_os = "windows")]
+pub fn launch_home_app(path: String) -> Result<(), String> {
+    use std::process::Command;
+    Command::new("cmd")
+        .args(["/C", &path])
+        .spawn()
+        .map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+
+pub fn drop_table() -> Result<String, String> {
+    let conn = Connection::open("projects.db").map_err(|e| e.to_string())?;
+    conn.execute("DROP TABLE IF EXISTS games", []).map_err(|e| e.to_string())?;
+    Ok("Таблица games успешно удалена.".to_string())
 }

@@ -1,3 +1,4 @@
+// src-tauri/src/games/mod.rs
 pub mod detection;
 pub mod rawg;
 use serde::{Serialize, Deserialize};

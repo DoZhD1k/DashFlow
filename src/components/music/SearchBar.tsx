@@ -1,34 +1,67 @@
-// src/components/music/SearchBar.tsx
-import React, { useState } from "react";
-import { Search } from "lucide-react";
+import { useState } from "react";
+import { invoke } from "@tauri-apps/api/core";
+import { SearchResultItem, Track, Playlist } from "../../types/music";
 
 interface SearchBarProps {
-  onSearch: (query: string) => void;
+  setSearchResults: React.Dispatch<React.SetStateAction<SearchResultItem[]>>;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
-  const [searchTerm, setSearchTerm] = useState("");
+export default function SearchBar({ setSearchResults }: SearchBarProps) {
+  const [query, setQuery] = useState<string>("");
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const query = event.target.value;
-    setSearchTerm(query);
-    onSearch(query);
+  const handleSearch = async () => {
+    if (!query.trim()) {
+      setSearchResults([]); // Очистка результатов, если поле ввода пустое
+      return;
+    }
+
+    try {
+      const tracksData: { data: Track[] } = await invoke(
+        "search_tracks_audius_command",
+        { query }
+      );
+      const playlistsData: { data: Playlist[] } = await invoke(
+        "search_playlists_audius_command",
+        { query }
+      );
+
+      const combinedResults: SearchResultItem[] = [
+        ...tracksData.data.map((track) => ({
+          ...track,
+          type: "track" as const, // Явно указываем "track"
+        })),
+        ...playlistsData.data.map((playlist) => ({
+          ...playlist,
+          type: "playlist" as const, // Явно указываем "playlist"
+        })),
+      ];
+
+      setSearchResults(combinedResults);
+    } catch (error) {
+      console.error("Ошибка поиска:", error);
+    }
   };
 
   return (
-    <div className="text-center mb-4">
-      <div className="inline-flex items-center gap-2 bg-gray-800 p-3 rounded-lg shadow-lg">
-        <Search size={20} className="text-gray-400" />
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={handleChange}
-          placeholder="Search for a track..."
-          className="w-80 p-2 bg-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+    <div className="flex gap-2 mb-4">
+      <input
+        type="text"
+        placeholder="Поиск треков или плейлистов..."
+        className="w-full p-2 bg-transparent placeholder-gray-400 outline-none border-b border-gray-300 max-w-lg dark:border-gray-700"
+        value={query}
+        onChange={(e) => {
+          setQuery(e.target.value);
+          if (!e.target.value.trim()) {
+            setSearchResults([]); // Очистка, если поле пустое
+          }
+        }}
+      />
+      <button
+        className="px-4 py-2 bg-blue-500 rounded-md hover:bg-blue-600 transition"
+        onClick={handleSearch}
+      >
+        🔍
+      </button>
     </div>
   );
-};
-
-export default SearchBar;
+}

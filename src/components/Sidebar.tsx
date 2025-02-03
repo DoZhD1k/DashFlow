@@ -24,16 +24,16 @@ const navItems = [
   { to: "/", label: "Главная", icon: <Home className="w-5 h-5" /> },
   { to: "/games", label: "Игры", icon: <Gamepad2 className="w-5 h-5" /> },
   { to: "/notes", label: "Заметки", icon: <Edit3 className="w-5 h-5" /> },
-  {
-    to: "/projects",
-    label: "Проекты",
-    icon: <ListChecks className="w-5 h-5" />,
-  },
   { to: "/music", label: "Музыка", icon: <Music className="w-5 h-5" /> },
   {
     to: "/profiles",
     label: "Профили",
     icon: <UsersRound className="w-5 h-5" />,
+  },
+  {
+    to: "/kanban",
+    label: "Туду",
+    icon: <ListChecks className="w-5 h-5" />,
   },
 ];
 
@@ -48,7 +48,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       className={`
         flex flex-col
         bg-white/5
-        dark:bg-white/5
+        dark:bg-stone-800
         backdrop-blur-xl
         border-r border-white/10 
         shadow-lg

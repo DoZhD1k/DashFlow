@@ -1,109 +1,154 @@
-// Note.tsx
 import React, { useState, useEffect } from "react";
-import SearchBar from "../components/notes/SearchBar";
 import NoteList from "../components/notes/NoteList";
-import NoteView from "../components/notes/NoteView";
-import NoteEditor from "../components/notes/NoteEditor";
-import { invoke } from "@tauri-apps/api/core";
+import Editor from "../components/notes/editor/Editor"; // Новый редактор
+import { getNotes, addNote, updateNote, deleteNote } from "../api/notesApi";
+import Loader from "~/components/Loader";
 
 interface Note {
   id: number;
   title: string;
-  content: string;
+  content: any; // JSON tiptap
   createdAt: string;
   updatedAt: string;
 }
 
-export const Notes: React.FC = () => {
+const Notes: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
   const [notes, setNotes] = useState<Note[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedNoteId, setSelectedNoteId] = useState<number | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-
-  const fetchNotes = async () => {
-    try {
-      console.log("Fetching notes..."); // Проверка начала запроса
-      const response = await invoke<Note[]>("get_notes_command");
-      console.log("Fetched notes:", response); // Лог данных из API
-      setNotes(response);
-    } catch (error) {
-      console.error("Failed to fetch notes:", error); // Лог ошибки
-    }
-  };
+  const [selectedContent, setSelectedContent] = useState<any>(null);
 
   useEffect(() => {
-    console.log("useEffect called, fetching notes...");
     fetchNotes();
   }, []);
 
-  const handleSaveNote = async (title: string, content: string) => {
+  const fetchNotes = async () => {
     try {
-      if (selectedNoteId) {
-        await invoke("update_note_command", {
-          id: selectedNoteId,
-          title,
-          content,
-        });
-      } else {
-        await invoke("add_note_command", { title, content });
-      }
-      setIsEditing(false);
-      fetchNotes();
+      const fetchedNotes = await getNotes();
+      setNotes(fetchedNotes);
     } catch (error) {
-      console.error("Failed to save note:", error);
+      console.error("Failed to fetch notes:", error);
     }
   };
 
-  const handleDeleteNote = async () => {
-    if (!selectedNoteId) return;
+  const handleSelectNote = (id: number) => {
+    const note = notes.find((n) => n.id === id);
+    if (note) {
+      setSelectedNoteId(id);
+      setSelectedContent(note.content);
+    }
+  };
+
+  const handleAddNote = async () => {
     try {
-      await invoke("delete_note_command", { id: selectedNoteId });
+      await addNote("Новая заметка", { type: "doc", content: [] });
+      await fetchNotes();
+    } catch (error) {
+      console.error("Failed to add note:", error);
+    }
+  };
+
+  const handleDeleteNote = async (id: number) => {
+    try {
+      await deleteNote(id);
+      await fetchNotes();
       setSelectedNoteId(null);
-      fetchNotes();
+      setSelectedContent(null);
     } catch (error) {
       console.error("Failed to delete note:", error);
     }
   };
 
-  const filteredNotes = notes.filter((note) =>
-    note?.title?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleNoteChange = async (newContent: any) => {
+    if (!selectedNoteId) return;
 
-  const selectedNote = notes.find((note) => note.id === selectedNoteId) || null;
+    setNotes((prev) =>
+      prev.map((n) =>
+        n.id === selectedNoteId ? { ...n, content: newContent } : n
+      )
+    );
+    setSelectedContent(newContent);
 
-  return (
-    <div className="flex flex-col p-6 gap-4">
-      {/* Верхняя панель с поиском и кнопкой добавления */}
-      <div className="flex items-center justify-between">
-        <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-        <button
-          onClick={() => {
-            setSelectedNoteId(null); // Сбрасываем выбранную заметку
-            setIsEditing(true); // Открываем редактор для добавления новой заметки
-          }}
-          className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-        >
-          Add Note
-        </button>
+    try {
+      const note = notes.find((n) => n.id === selectedNoteId);
+      const currentTitle = note?.title || "Без названия";
+      await updateNote(selectedNoteId, currentTitle, newContent);
+    } catch (error) {
+      console.error("Failed to save note:", error);
+    }
+  };
+
+  const handleTitleChange = async (id: number, newTitle: string) => {
+    if (!id) return; // Если ID нет — выходим
+
+    try {
+      const currentContent = notes.find((note) => note.id === id)?.content || {
+        type: "doc",
+        content: [],
+      };
+      await updateNote(id, newTitle, currentContent);
+
+      setNotes((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, title: newTitle } : n))
+      );
+    } catch (error) {
+      console.error("Failed to update title:", error);
+    }
+  };
+
+  useEffect(() => {
+    // Симуляция загрузки данных
+    setTimeout(() => {
+      setIsLoading(false);
+    }); // Можно убрать задержку, если не нужна
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-stone-900">
+        <Loader />
       </div>
+    );
+  }
+  return (
+    <div className="min-h-screen max-h-screen  flex flex-col lg:flex-row overflow-hidden bg-white dark:bg-stone-900">
+      <NoteList
+        notes={notes.filter((note) =>
+          note.title.toLowerCase().includes(searchQuery.toLowerCase())
+        )}
+        selectedNoteId={selectedNoteId}
+        setSelectedNoteId={handleSelectNote}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        onAdd={handleAddNote}
+        onDelete={handleDeleteNote}
+        onUpdateTitle={handleTitleChange} // 🔥 Добавлено для исправления ошибки
+      />
 
-      <div className="flex gap-4">
-        {/* Список заметок */}
-        <NoteList
-          notes={filteredNotes}
-          selectedNoteId={selectedNoteId}
-          setSelectedNoteId={setSelectedNoteId}
-        />
-
-        {/* Просмотр или редактирование заметки */}
-        {isEditing ? (
-          <NoteEditor
-            note={selectedNote || { title: "", content: "" }}
-            onSave={handleSaveNote}
-            onCancel={() => setIsEditing(false)}
+      <div className="flex flex-col flex-1 overflow-hidden">
+        {selectedNoteId && selectedContent ? (
+          <Editor
+            key={selectedNoteId}
+            content={selectedContent}
+            onContentChange={handleNoteChange}
+            title={
+              notes.find((n) => n.id === selectedNoteId)?.title ||
+              "Без названия"
+            }
+            onTitleChange={(newTitle) => {
+              if (selectedNoteId) {
+                handleTitleChange(selectedNoteId, newTitle);
+              }
+            }} // 🔥 Оборачиваем функцию
           />
         ) : (
-          <NoteView note={selectedNote} onEdit={() => setIsEditing(true)} />
+          <div className="flex flex-1 items-center justify-center">
+            <p className="text-gray-500 dark:text-gray-400">
+              Выберите заметку или создайте новую
+            </p>
+          </div>
         )}
       </div>
     </div>

@@ -1,6 +1,5 @@
-// src/components/WeatherWidget.tsx
 import React, { useEffect, useState } from "react";
-import { Cloud, Sun, CloudRain, Snowflake, Search, MapPin } from "lucide-react";
+import { Cloud, Sun, CloudRain, Snowflake, Search } from "lucide-react";
 import axios from "axios";
 
 interface WeatherData {
@@ -20,42 +19,38 @@ const WeatherWidget: React.FC = () => {
 
   const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 
-  // Функция для получения иконки
   const getWeatherIcon = (icon: string) => {
     switch (icon) {
       case "01d":
-        return <Sun className="w-12 h-12 text-yellow-400" />;
+        return <Sun className="w-10 h-10 text-yellow-400" />;
       case "02d":
       case "03d":
       case "04d":
-        return <Cloud className="w-12 h-12 text-gray-300" />;
+        return <Cloud className="w-10 h-10 text-gray-700 dark:text-gray-300" />;
       case "09d":
       case "10d":
-        return <CloudRain className="w-12 h-12 text-blue-400" />;
+        return <CloudRain className="w-10 h-10 text-blue-400" />;
       case "13d":
-        return <Snowflake className="w-12 h-12 text-blue-300" />;
+        return <Snowflake className="w-10 h-10 text-blue-300" />;
       case "01n":
-        return <Sun className="w-12 h-12 text-yellow-400" />;
+        return <Sun className="w-10 h-10 text-yellow-400" />;
       case "02n":
       case "03n":
       case "04n":
-        return <Cloud className="w-12 h-12 text-gray-300" />;
+        return <Cloud className="w-10 h-10 text-gray-700 dark:text-gray-300" />;
       case "09n":
       case "10n":
-        return <CloudRain className="w-12 h-12 text-blue-400" />;
+        return <CloudRain className="w-10 h-10 text-blue-400" />;
       case "13n":
-        return <Snowflake className="w-12 h-12 text-blue-300" />;
+        return <Snowflake className="w-10 h-10 text-blue-300" />;
       default:
-        return <Cloud className="w-12 h-12 text-gray-300" />;
+        return <Cloud className="w-10 h-10 text-gray-700 dark:text-gray-300" />;
     }
   };
 
-  // Функция для запроса погоды
   const fetchWeather = async (city: string) => {
     if (!API_KEY) {
-      setError(
-        "API ключ не настроен. Пожалуйста, добавьте его в переменные окружения."
-      );
+      setError("API ключ не настроен. Добавьте его в переменные окружения.");
       setLoading(false);
       return;
     }
@@ -81,13 +76,13 @@ const WeatherWidget: React.FC = () => {
         icon: data.weather[0].icon,
         city: data.name,
       });
-      localStorage.setItem("defaultCity", data.name); // Сохраняем корректное название города
+      localStorage.setItem("defaultCity", data.name);
     } catch (err: any) {
-      console.error("Ошибка при получении данных о погоде:", err);
+      console.error("Ошибка получения данных о погоде:", err);
       if (err.response && err.response.status === 404) {
-        setError("Город не найден. Пожалуйста, попробуйте другой.");
+        setError("Город не найден.");
       } else {
-        setError("Не удалось загрузить данные о погоде.");
+        setError("Не удалось загрузить погоду.");
       }
       setWeather(null);
     } finally {
@@ -95,66 +90,53 @@ const WeatherWidget: React.FC = () => {
     }
   };
 
-  // Инициализация с сохранённым или начальным городом
   useEffect(() => {
     fetchWeather(searchCity);
-  }, []); // Пустой массив зависимостей для однократного вызова
-
-  // Обработчик отправки формы
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const trimmedCity = searchCity.trim();
-    if (trimmedCity === "") {
-      setError("Пожалуйста, введите название города.");
-      return;
-    }
-    fetchWeather(trimmedCity);
-  };
+  }, []);
 
   return (
-    <div className="p-6 bg-gradient-to-br from-gray-700 to-gray-900 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg flex flex-col items-center gap-4 transition-all duration-300 hover:shadow-2xl">
-      {/* Форма Поиска Города */}
-      <form onSubmit={handleSubmit} className="w-full">
-        <div className="relative flex items-center">
-          <input
-            type="text"
-            value={searchCity}
-            onChange={(e) => setSearchCity(e.target.value)}
-            placeholder="Введите город"
-            className="w-full p-2 pl-4 pr-10 bg-transparent border-b border-gray-300 text-white focus:outline-none placeholder-gray-400"
-          />
-          <button
-            type="submit"
-            className="absolute right-0 top-0 mt-2 mr-3 bg-transparent"
-            title="Поиск"
-          >
-            <Search className="w-5 h-5 text-gray-300 hover:text-white" />
-          </button>
-        </div>
+    <div className="p-4 bg-white dark:bg-stone-800 rounded-lg shadow-md flex flex-col items-center gap-2 w-full transition-all duration-300">
+      {/* Поле ввода и кнопка */}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          fetchWeather(searchCity.trim());
+        }}
+        className="relative w-full"
+      >
+        <input
+          type="text"
+          value={searchCity}
+          onChange={(e) => setSearchCity(e.target.value)}
+          placeholder="Город"
+          className="
+          w-full p-2 pl-4 pr-10 bg-transparent border-b border-gray-300 focus:outline-none placeholder-gray-400"
+        />
+        <button
+          type="submit"
+          title="Найти"
+          className="absolute right-2 top-2 text-gray-500 hover:text-gray-400 dark:hover:text-white"
+        >
+          <Search className="w-5 h-5" />
+        </button>
       </form>
 
-      {/* Отображение Погоды */}
+      {/* Отображение погоды */}
       {loading ? (
         <div className="flex items-center">
-          <Cloud className="w-12 h-12 text-gray-400 animate-pulse" />
-          <p className="text-lg text-white ml-4">Загрузка погоды...</p>
+          <Cloud className="w-10 h-10 dark:text-gray-400 animate-pulse" />
+          <p className="text-sm dark:text-gray-300 ml-2">Загрузка...</p>
         </div>
       ) : error ? (
-        <div className="flex items-center">
-          <CloudRain className="w-12 h-12 text-red-500" />
-          <p className="text-lg text-white ml-4">{error}</p>
-        </div>
+        <p className="text-sm text-red-400">{error}</p>
       ) : weather ? (
         <div className="flex flex-col items-center">
-          <div className="flex-shrink-0">{getWeatherIcon(weather.icon)}</div>
-          <div className="mt-4 text-center text-white">
-            <div className="flex justify-between items-center">
-              <MapPin />
-              <h3 className="text-2xl font-bold flex">{weather.city}</h3>
-            </div>
-            <p className="text-3xl font-semibold">{weather.temperature} °C</p>
-            <p className="capitalize text-lg">{weather.description}</p>
-          </div>
+          {getWeatherIcon(weather.icon)}
+          <p className="text-lg font-bold">{weather.city}</p>
+          <p className="text-2xl font-semibold">{weather.temperature} °C</p>
+          <p className="text-sm capitalize text-gray-500 dark:text-gray-300">
+            {weather.description}
+          </p>
         </div>
       ) : null}
     </div>

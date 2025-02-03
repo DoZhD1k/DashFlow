@@ -4,134 +4,81 @@ import { Sun, Moon } from "lucide-react";
 const TimeWidget: React.FC = () => {
   const [time, setTime] = useState<Date>(new Date());
   const [isDay, setIsDay] = useState<boolean>(true);
-  const [angle, setAngle] = useState<number>(0);
 
   useEffect(() => {
     const timer = setInterval(() => {
       const now = new Date();
       setTime(now);
-      updateTimeOfDay(now);
-      updateAngle(now);
+      setIsDay(now.getHours() >= 6 && now.getHours() < 18);
     }, 1000);
-
-    // Initialize on first render
-    const now = new Date();
-    updateTimeOfDay(now);
-    updateAngle(now);
-
     return () => clearInterval(timer);
   }, []);
 
-  const updateTimeOfDay = (currentTime: Date) => {
-    const hours = currentTime.getHours();
-    setIsDay(hours >= 6 && hours < 18);
-  };
-
-  const updateAngle = (currentTime: Date) => {
-    const hours = currentTime.getHours();
-    const minutes = currentTime.getMinutes();
-    const totalMinutes = hours * 60 + minutes;
-    const calculatedAngle = (totalMinutes / (24 * 60)) * 360;
-    setAngle(calculatedAngle);
-  };
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const getArcPath = (radius: number, startAngle: number, endAngle: number) => {
-    const start = polarToCartesian(radius, radius, radius, startAngle);
-    const end = polarToCartesian(radius, radius, radius, endAngle);
-    const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-
-    return `M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${end.x} ${end.y}`;
-  };
-
-  const polarToCartesian = (
-    centerX: number,
-    centerY: number,
-    radius: number,
-    angleInDegrees: number
-  ) => {
-    const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
-    return {
-      x: centerX + radius * Math.cos(angleInRadians),
-      y: centerY + radius * Math.sin(angleInRadians),
-    };
-  };
-
-  const radius = 90; // Clock radius
-  const size = radius * 2 + 20; // Adjusted size with padding
-  const center = size / 2; // Center of the SVG
+  // Получаем углы для стрелок
+  const secondsAngle = (time.getSeconds() / 60) * 360;
+  const minutesAngle = (time.getMinutes() / 60) * 360;
+  const hoursAngle = ((time.getHours() % 12) / 12) * 360;
 
   return (
-    <div className="flex flex-col items-center bg-gray-900 p-6 rounded-xl shadow-md">
-      <div className="relative">
-        {/* Clock Face */}
-        <svg
-          width={size}
-          height={size}
-          viewBox={`0 0 ${size} ${size}`}
-          className="overflow-visible"
-        >
-          {/* Background Arc */}
-          <circle
-            cx={center}
-            cy={center}
-            r={radius}
-            fill="none"
-            stroke="#2d3748"
-            strokeWidth="10"
-          />
-          {/* Time Arc */}
-          <path
-            d={getArcPath(center, 0, angle)}
-            fill="none"
-            stroke={isDay ? "#FDB813" : "#4B5563"}
-            strokeWidth="4"
-          />
-          {/* Hour Markers */}
-          {[0, 90, 180, 270].map((markAngle) => {
-            const pos = polarToCartesian(
-              center,
-              center,
-              radius - 10,
-              markAngle
-            );
-            return (
-              <circle key={markAngle} cx={pos.x} cy={pos.y} r="3" fill="#fff" />
-            );
-          })}
-        </svg>
-        {/* Time Display */}
-        <div
-          className="absolute text-center text-white font-bold"
-          style={{
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        >
-          <p className="text-3xl">{formatTime(time)}</p>
+    <div
+      className="relative flex flex-col items-center justify-center bg-white dark:bg-stone-800 p-6 rounded-lg shadow-lg transition-all duration-500 ease-in-out 
+      dark:shadow-[0px_0px_20px_rgba(255,255,255,0.2)]"
+    >
+      {/* Анимированные стрелки часов */}
+      <svg
+        className="absolute top-0 left-0 w-full h-full"
+        viewBox="0 0 100 100"
+      >
+        {/* Часовая стрелка */}
+        <line
+          x1="50"
+          y1="50"
+          x2="50"
+          y2="30"
+          stroke="gray"
+          strokeWidth="3"
+          strokeLinecap="round"
+          transform={`rotate(${hoursAngle} 50 50)`}
+          className="transition-transform duration-500 ease-in-out"
+        />
+        {/* Минутная стрелка */}
+        <line
+          x1="50"
+          y1="50"
+          x2="50"
+          y2="20"
+          stroke="gray"
+          strokeWidth="2"
+          strokeLinecap="round"
+          transform={`rotate(${minutesAngle} 50 50)`}
+          className="transition-transform duration-500 ease-in-out"
+        />
+        {/* Секундная стрелка */}
+        <line
+          x1="50"
+          y1="50"
+          x2="50"
+          y2="15"
+          stroke="red"
+          strokeWidth="1"
+          strokeLinecap="round"
+          transform={`rotate(${secondsAngle} 50 50)`}
+          className="transition-transform duration-300 ease-in-out"
+        />
+      </svg>
+
+      {/* Текущее время */}
+
+      {/* Иконка дня или ночи */}
+      <div className="absolute flex bottom-3 justify-start items-center text-center w-full gap-10 px-16">
+        <div className="text-4xl font-bold text-black dark:text-white transition-all duration-500 ease-in-out">
+          {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
         </div>
-        {/* Sun/Moon Icon */}
-        <div
-          className="absolute transform -translate-x-1/2 -translate-y-1/2"
-          style={{
-            left: `${polarToCartesian(center, center, radius + 25, angle).x}px`,
-            top: `${polarToCartesian(center, center, radius + 25, angle).y}px`,
-            transition: "all 1s linear",
-          }}
-        >
-          {isDay ? (
-            <Sun className="w-6 h-6 text-yellow-400" />
-          ) : (
-            <Moon className="w-6 h-6 text-gray-300" />
-          )}
-        </div>
+        {isDay ? (
+          <Sun className="w-8 h-8 text-yellow-400 animate-pulse" />
+        ) : (
+          <Moon className="w-8 h-8 text-blue-400 animate-fadeIn" />
+        )}{" "}
       </div>
     </div>
   );
