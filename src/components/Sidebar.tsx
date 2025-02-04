@@ -12,7 +12,6 @@ import {
   Music,
   UsersRound,
 } from "lucide-react";
-import packageJson from "../../package.json"; // ✅ Импорт версии из package.json
 
 interface SidebarProps {
   isCollapsed: boolean;
