@@ -282,14 +282,61 @@ p {
   font-weight: bold;
 }
 
-/* Блок кода */
+/* Общие стили для блока кода */
 .ProseMirror pre {
-  background-color: #f3f4f6;
   padding: 1rem;
   border-radius: 8px;
   font-family: "Fira Code", monospace;
   font-size: 0.9rem;
   overflow-x: auto;
+  background-color: #f3f4f6; /* Светлый фон для светлой темы */
+  color: #2d3748; /* Тёмный текст */
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Темная тема */
+.dark .ProseMirror pre {
+  background-color: #1e1e1e; /* Глубокий серый фон */
+  color: #e2e8f0; /* Светлый текст */
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+/* Подсветка синтаксиса */
+.ProseMirror pre .hljs-keyword {
+  color: #d73a49; /* Красный для ключевых слов */
+}
+
+.ProseMirror pre .hljs-string {
+  color: #28a745; /* Зеленый для строк */
+}
+
+.ProseMirror pre .hljs-number {
+  color: #005cc5; /* Синий для чисел */
+}
+
+.ProseMirror pre .hljs-comment {
+  color: #6a737d; /* Серый для комментариев */
+  font-style: italic;
+}
+
+.dark .ProseMirror pre .hljs-comment {
+  color: #7c7c7c; /* Более светлый серый для темной темы */
+}
+
+.ProseMirror pre .hljs-function {
+  color: #6f42c1; /* Фиолетовый для функций */
+}
+
+.ProseMirror pre .hljs-attribute {
+  color: #e36209; /* Оранжевый для атрибутов */
+}
+
+.ProseMirror pre .hljs-punctuation {
+  color: #586069; /* Серый для пунктуации */
+}
+
+.dark .ProseMirror pre .hljs-punctuation {
+  color: #9da5b4; /* Светлый серый для темной темы */
 }
 
 /* Выделение текста */
@@ -332,16 +379,6 @@ p {
 .ProseMirror th {
   background-color: #f3f4f6;
   font-weight: bold;
-}
-
-/* Блок кода */
-.ProseMirror pre {
-  background-color: #f3f4f6;
-  padding: 1rem;
-  border-radius: 8px;
-  font-family: "Fira Code", monospace;
-  font-size: 0.9rem;
-  overflow-x: auto;
 }
 
 /* Выделение текста */

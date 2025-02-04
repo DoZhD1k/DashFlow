@@ -16,8 +16,8 @@ import {
 interface SidebarProps {
   isCollapsed: boolean;
   toggleSidebar: () => void;
-  isDarkMode: boolean;
-  toggleTheme: () => void;
+  isDarkMode: boolean; // ✅ Добавлено
+  toggleTheme: () => void; // ✅ Добавлено
 }
 
 const navItems = [
@@ -30,11 +30,7 @@ const navItems = [
     label: "Профили",
     icon: <UsersRound className="w-5 h-5" />,
   },
-  {
-    to: "/kanban",
-    label: "Туду",
-    icon: <ListChecks className="w-5 h-5" />,
-  },
+  { to: "/kanban", label: "Туду", icon: <ListChecks className="w-5 h-5" /> },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -47,60 +43,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <aside
       className={`
         flex flex-col
-        bg-white/5
-        dark:bg-stone-800
+        bg-white/5 dark:bg-stone-800
         backdrop-blur-xl
         border-r border-white/10 
         shadow-lg
         transition-all duration-300
         ${isCollapsed ? "w-16" : "w-46"}
-        h-screen
-        p-4
+        h-screen p-4
       `}
     >
-      {/* Кнопка сворачивания/разворачивания */}
       <button
         onClick={toggleSidebar}
-        className="
-          bg-white/10
-          hover:bg-white/20
-          transition
-          rounded-xl
-          p-2
-          text-black dark:text-white
-          flex
-          items-center
-          justify-center
-          mb-4
-        "
+        className="bg-white/10 hover:bg-white/20 transition rounded-xl p-2 text-black dark:text-white flex items-center justify-center mb-4"
       >
         {isCollapsed ? <ChevronsRight /> : <ChevronsLeft />}
       </button>
 
-      {/* Заголовок (виден, если не свёрнуто) */}
-      {!isCollapsed && (
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold">Dashboard</h2>
-        </div>
-      )}
+      {!isCollapsed && <h2 className="text-2xl font-bold mb-8">Dashboard</h2>}
 
-      {/* Навигация */}
       <nav className="flex flex-col gap-2">
         {navItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             className={({ isActive }) =>
-              `
-                flex items-center gap-3
-                px-3 py-2
-                rounded-lg
-                hover:bg-white/20
-                transition
-                text-black dark:text-white
-                ${isActive ? "bg-white/20" : ""}
-                ${isCollapsed ? "justify-center" : ""}
-              `
+              `flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/20 transition text-black dark:text-white ${
+                isActive ? "bg-white/20" : ""
+              } ${isCollapsed ? "justify-center" : ""}`
             }
           >
             <span>{item.icon}</span>
@@ -109,21 +78,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ))}
       </nav>
 
-      {/* Кнопка переключения темы (внизу) */}
       <div className="mt-auto">
         <button
           onClick={toggleTheme}
-          className="
-            bg-white/10
-            hover:bg-white/20
-            transition
-            rounded-xl
-            p-2
-            w-full
-            flex items-center
-            justify-center
-            text-black dark:text-white
-          "
+          className="bg-white/10 hover:bg-white/20 transition rounded-xl p-2 w-full flex items-center justify-center text-black dark:text-white"
         >
           {isDarkMode ? (
             <Sun className="w-5 h-5" />

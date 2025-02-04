@@ -31,9 +31,18 @@ import TextAlign from "@tiptap/extension-text-align";
 import { all, createLowlight } from "lowlight";
 import js from "highlight.js/lib/languages/javascript";
 import ts from "highlight.js/lib/languages/typescript";
+import css from "highlight.js/lib/languages/css";
+import java from "highlight.js/lib/languages/java";
+import rust from "highlight.js/lib/languages/rust";
+import python from "highlight.js/lib/languages/python";
+
 const lowlight = createLowlight(all);
 lowlight.register("js", js);
 lowlight.register("ts", ts);
+lowlight.register("css", css);
+lowlight.register("java", java);
+lowlight.register("rust", rust);
+lowlight.register("python", python);
 
 const configureExtensions = () => [
   Document,

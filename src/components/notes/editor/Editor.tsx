@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
-import FloatingMenu from "./FloatingMenuComponent";
-import BubbleMenu from "./BubbleMenuComponent";
 import Tools from "./tools/Tools";
 import configureExtensions from "./configureExtensions";
 import { generateText } from "./utils/genAI";
@@ -95,8 +93,6 @@ const Editor: React.FC<EditorProps> = ({
           }
         }}
       />
-      <FloatingMenu editor={editor} onGenerateText={generateText} />
-      <BubbleMenu editor={editor} onGenerateText={generateText} />
       <EditorContent
         editor={editor}
         className="border p-4 rounded shadow overflow-y-auto custom-scrollbar h-screen"

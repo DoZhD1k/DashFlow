@@ -9,16 +9,22 @@ import { Profiles } from "./pages/Profiles";
 import KanbanBoard from "./pages/KanbanBoard";
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  // Загружаем тему из localStorage при первой загрузке
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    return localStorage.getItem("theme") === "dark";
+  });
+
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-  // При переключении темы меняем класс "dark" на <html>
+  // Устанавливаем тему в <html> при изменении `isDarkMode`
   useEffect(() => {
     const htmlEl = document.documentElement;
     if (isDarkMode) {
       htmlEl.classList.add("dark");
+      localStorage.setItem("theme", "dark");
     } else {
       htmlEl.classList.remove("dark");
+      localStorage.setItem("theme", "light");
     }
   }, [isDarkMode]);
 
@@ -38,8 +44,6 @@ function App() {
         isSidebarCollapsed={isSidebarCollapsed}
         toggleSidebar={toggleSidebar}
       >
-        {/* <PlayerProvider> */}
-        {/* <ScreenRecordingProvider> */}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/games" element={<Games />} />
@@ -48,8 +52,6 @@ function App() {
           <Route path="/profiles" element={<Profiles />} />
           <Route path="/kanban" element={<KanbanBoard />} />
         </Routes>
-        {/* </ScreenRecordingProvider> */}
-        {/* </PlayerProvider> */}
       </Layout>
     </BrowserRouter>
   );
