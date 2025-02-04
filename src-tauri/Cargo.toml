@@ -45,6 +45,8 @@ battery = "^0.7"
 tauri-plugin-single-instance = "2.2.1"
 tauri-plugin-autostart = "2.2.0"
 tauri-plugin-updater = "2.4.0"
+tauri-plugin-dialog = "1.0"
+
 
 [[bin]]
 name = "DashFlow"

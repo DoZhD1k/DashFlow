@@ -3,13 +3,14 @@
 use dotenv::dotenv;
 use std::env;
 use tauri::{
-    AppHandle, Manager,
+    AppHandle, Manager, Window,
     menu::{Menu, MenuItem},
     tray::{TrayIconBuilder, TrayIconEvent, MouseButton, MouseButtonState},
 };
 use tauri_plugin_single_instance::init as SingleInstance;
-use tauri_plugin_autostart::{MacosLauncher, ManagerExt}; // ✅ Новый API
-use tauri_plugin_updater::UpdaterExt; // ✅ Импорт UpdaterExt (фикс ошибки)
+use tauri_plugin_autostart::{MacosLauncher, ManagerExt};
+use tauri_plugin_updater::UpdaterExt;
+use tauri_plugin_dialog::MessageDialog;
 
 mod commands;
 mod db;
@@ -24,14 +25,13 @@ fn main() {
             MacosLauncher::LaunchAgent,
             Some(vec!["--flag1", "--flag2"]),
         ))
-        .plugin(tauri_plugin_shell::init()) // ✅ Shell API
+        .plugin(tauri_plugin_shell::init())
         .plugin(SingleInstance(|_app, _args, _cwd| {
             println!("⚠️ Приложение уже запущено!");
         }))
         .setup(|app| {
-            let app_handle = app.app_handle();
+            let app_handle = app.handle();
 
-            // ✅ Включаем автозапуск
             let autostart_manager = app.autolaunch();
             if let Err(e) = autostart_manager.enable() {
                 println!("❌ Ошибка включения автозапуска: {:?}", e);
@@ -39,9 +39,10 @@ fn main() {
                 println!("✅ Автозапуск включен!");
             }
 
-            // 🔄 **Проверка обновлений** (ФИКС передаваемого типа)
+            // 🔥 Запускаем автообновление с задержкой 5 секунд
             let app_clone = app_handle.clone();
             tauri::async_runtime::spawn(async move {
+                tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
                 if let Err(e) = update(app_clone).await {
                     println!("❌ Ошибка автообновления: {:?}", e);
                 }
@@ -95,13 +96,11 @@ fn main() {
             commands::launch_game,
             commands::open_url,
             commands::open_in_vscode,
-
             commands::get_cpu_usage,
             commands::get_memory_usage,
             commands::get_process_count,
             commands::get_uptime,
             commands::get_battery_info,
-
             commands::lock,
             commands::restart,
             commands::sleep_mode,
@@ -109,46 +108,38 @@ fn main() {
             commands::open_task_manager,
             commands::open_settings,
             commands::open_explorer,
-
             commands::add_links,
             commands::get_links,
             commands::update_link,
             commands::delete_link,
-
             commands::search_tracks_audius_command,
             commands::search_playlists_audius_command,
             commands::get_playlist_tracks_audius_command,
             commands::get_track_stream_url_command,
             commands::get_trending_tracks_command,
-
             commands::add_profiles,
             commands::update_profiles,
             commands::get_profiles_command,
             commands::delete_profiles,
-
             commands::add_note_command,
             commands::get_notes_command,
             commands::update_note_command,
             commands::delete_note_command,
-
             commands::kanban_add_task_command,
             commands::kanban_delete_task_command,
             commands::kanban_update_task_command,
             commands::kanban_list_tasks_command,
-
             commands::add_event_command,
             commands::get_events_by_date_command,
             commands::delete_event_command,
             commands::update_event_command,
             commands::complete_text,
-
             commands::add_home_apps,
             commands::get_home_apps,
             commands::delete_home_app,
             commands::launch_home_app,
             commands::open_dashflow_folder,
             commands::save_video,
-
             commands::drop_games_table,
         ])
         .run(tauri::generate_context!())
@@ -162,21 +153,34 @@ async fn update(app: tauri::AppHandle) -> tauri_plugin_updater::Result<()> {
 
         println!("🔄 Найдено обновление: {:?}", update.version);
 
-        // ✅ Скачивание и установка обновления
-        update
-            .download_and_install(
-                |chunk_length, content_length| {
-                    downloaded += chunk_length;
-                    println!("📥 Загружено {}/{}", downloaded, content_length.unwrap_or(0));
-                },
-                || {
-                    println!("✅ Загрузка завершена.");
-                },
-            )
-            .await?;
+        // ✅ Показываем пользователю диалоговое окно с кнопками "Обновить" и "Отмена"
+        let should_update = MessageDialog::new("Обновление", format!("Найдена новая версия: {}", update.version))
+            .buttons(["Обновить", "Отмена"])
+            .show()
+            .await
+            .unwrap_or("Отмена".to_string()) == "Обновить";
 
-        println!("✅ Обновление установлено. Перезапуск...");
-        app.restart();
+        if should_update {
+            tauri::async_runtime::spawn(async move {
+                update
+                    .download_and_install(
+                        |chunk_length, content_length| {
+                            downloaded += chunk_length;
+                            println!("📥 Загружено {}/{}", downloaded, content_length.unwrap_or(0));
+                        },
+                        || {
+                            println!("✅ Загрузка завершена.");
+                        },
+                    )
+                    .await
+                    .unwrap();
+
+                println!("✅ Обновление установлено. Перезапуск...");
+                app.restart();
+            });
+        } else {
+            println!("❌ Обновление отменено пользователем.");
+        }
     } else {
         println!("✅ Установлена последняя версия.");
     }
