@@ -12,12 +12,13 @@ import {
   Music,
   UsersRound,
 } from "lucide-react";
+import packageJson from "../../package.json"; // ✅ Импорт версии из package.json
 
 interface SidebarProps {
   isCollapsed: boolean;
   toggleSidebar: () => void;
-  isDarkMode: boolean; // ✅ Добавлено
-  toggleTheme: () => void; // ✅ Добавлено
+  isDarkMode: boolean;
+  toggleTheme: () => void;
 }
 
 const navItems = [
@@ -39,6 +40,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isDarkMode,
   toggleTheme,
 }) => {
+  const appVersion = import.meta.env.VITE_APP_VERSION;
   return (
     <aside
       className={`
@@ -59,7 +61,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {isCollapsed ? <ChevronsRight /> : <ChevronsLeft />}
       </button>
 
-      {!isCollapsed && <h2 className="text-2xl font-bold mb-8">Dashboard</h2>}
+      {!isCollapsed && (
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold">
+            Dashboard{" "}
+            <span className="text-sm text-gray-500">v{appVersion}</span>
+          </h2>
+        </div>
+      )}
 
       <nav className="flex flex-col gap-2">
         {navItems.map((item) => (

@@ -1,16 +1,14 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use dotenv::dotenv;
-use std::env;
 use tauri::{
-    AppHandle, Manager, Window,
+    AppHandle, Manager,
     menu::{Menu, MenuItem},
     tray::{TrayIconBuilder, TrayIconEvent, MouseButton, MouseButtonState},
 };
 use tauri_plugin_single_instance::init as SingleInstance;
 use tauri_plugin_autostart::{MacosLauncher, ManagerExt};
 use tauri_plugin_updater::UpdaterExt;
-use tauri_plugin_dialog::MessageDialog;
 
 mod commands;
 mod db;
@@ -21,6 +19,7 @@ fn main() {
     dotenv().ok();
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_updater::Builder::new().build()) // ✅ Включаем автообновление
         .plugin(tauri_plugin_autostart::init(
             MacosLauncher::LaunchAgent,
             Some(vec!["--flag1", "--flag2"]),
@@ -30,27 +29,22 @@ fn main() {
             println!("⚠️ Приложение уже запущено!");
         }))
         .setup(|app| {
-            let app_handle = app.handle();
+            let app_handle = app.handle().clone(); // ✅ Клонируем AppHandle
 
-            let autostart_manager = app.autolaunch();
-            if let Err(e) = autostart_manager.enable() {
-                println!("❌ Ошибка включения автозапуска: {:?}", e);
-            } else {
-                println!("✅ Автозапуск включен!");
-            }
-
-            // 🔥 Запускаем автообновление с задержкой 5 секунд
-            let app_clone = app_handle.clone();
+            // 🔄 Проверка обновлений при старте
             tauri::async_runtime::spawn(async move {
-                tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
-                if let Err(e) = update(app_clone).await {
+                if let Err(e) = update(app_handle).await {
                     println!("❌ Ошибка автообновления: {:?}", e);
                 }
             });
 
-            // 🔥 **Создаём трей-меню**
-            let quit_item = MenuItem::with_id(app_handle, "quit", "Выход", true, None::<&str>)?;
-            let tray_menu = Menu::with_items(app_handle, &[&quit_item])?;
+
+            // ✅ Клонируем AppHandle
+            let app_handle = app.handle().clone();
+
+            // 🔥 Создаём трей-меню
+            let quit_item = MenuItem::with_id(&app_handle, "quit", "Выход", true, None::<&str>)?;
+            let tray_menu = Menu::with_items(&app_handle, &[&quit_item])?;
 
             let tray = TrayIconBuilder::new()
                 .menu(&tray_menu)
@@ -153,34 +147,20 @@ async fn update(app: tauri::AppHandle) -> tauri_plugin_updater::Result<()> {
 
         println!("🔄 Найдено обновление: {:?}", update.version);
 
-        // ✅ Показываем пользователю диалоговое окно с кнопками "Обновить" и "Отмена"
-        let should_update = MessageDialog::new("Обновление", format!("Найдена новая версия: {}", update.version))
-            .buttons(["Обновить", "Отмена"])
-            .show()
-            .await
-            .unwrap_or("Отмена".to_string()) == "Обновить";
+        update
+            .download_and_install(
+                |chunk_length, content_length| {
+                    downloaded += chunk_length;
+                    println!("📥 Загружено {}/{}", downloaded, content_length.unwrap_or(0));
+                },
+                || {
+                    println!("✅ Загрузка завершена.");
+                },
+            )
+            .await?;
 
-        if should_update {
-            tauri::async_runtime::spawn(async move {
-                update
-                    .download_and_install(
-                        |chunk_length, content_length| {
-                            downloaded += chunk_length;
-                            println!("📥 Загружено {}/{}", downloaded, content_length.unwrap_or(0));
-                        },
-                        || {
-                            println!("✅ Загрузка завершена.");
-                        },
-                    )
-                    .await
-                    .unwrap();
-
-                println!("✅ Обновление установлено. Перезапуск...");
-                app.restart();
-            });
-        } else {
-            println!("❌ Обновление отменено пользователем.");
-        }
+        println!("✅ Обновление установлено. Перезапуск...");
+        app.restart();
     } else {
         println!("✅ Установлена последняя версия.");
     }

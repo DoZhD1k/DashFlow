@@ -7,6 +7,11 @@ const host = process.env.TAURI_DEV_HOST;
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
+  define: {
+    "import.meta.env.VITE_APP_VERSION": JSON.stringify(
+      process.env.npm_package_version
+    ),
+  },
   plugins: [react()],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`

@@ -62,10 +62,10 @@
 
     "updater": {
       "active": true,
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJGNDMwRTk5RUJCRUZEMjgKUldRby9iN3JtUTVEditkeEY0elZlZHJmSWVMS2pMbW81SDQrUnhIMHVPL2ZkUVAyeDBMZ3E5L0wK",
       "endpoints": [
         "https://github.com/DoZhD1k/DashFlow/releases/latest/download/latest.json"
       ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJGNDMwRTk5RUJCRUZEMjgKUldRby9iN3JtUTVEditkeEY0elZlZHJmSWVMS2pMbW81SDQrUnhIMHVPL2ZkUVAyeDBMZ3E5L0wK",
       "dialog": true,
       "windows": {
         "installMode": "passive"
