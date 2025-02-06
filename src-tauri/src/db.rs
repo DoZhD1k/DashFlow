@@ -766,7 +766,7 @@ pub fn launch_home_app(path: String) -> Result<(), String> {
 
 
 pub fn drop_table() -> Result<String, String> {
-    let conn = Connection::open("projects.db").map_err(|e| e.to_string())?;
+    let conn = init_db()?;
     conn.execute("DROP TABLE IF EXISTS games", []).map_err(|e| e.to_string())?;
     Ok("Таблица games успешно удалена.".to_string())
 }
