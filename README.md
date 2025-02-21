@@ -1,46 +1,115 @@
-# DashFlow
+# 🚀 DashFlow – Personal Dashboard for Everything
 
-## EN  
+[![GitHub release](https://img.shields.io/github/v/release/DoZhD1k/DashFlow?style=for-the-badge)](https://github.com/DoZhD1k/DashFlow/releases)
+[![GitHub contributors](https://img.shields.io/github/contributors/DoZhD1k/DashFlow?style=for-the-badge)](https://github.com/DoZhD1k/DashFlow/graphs/contributors)
+[![GitHub issues](https://img.shields.io/github/issues/DoZhD1k/DashFlow?style=for-the-badge)](https://github.com/DoZhD1k/DashFlow/issues)
+[![License](https://img.shields.io/github/license/DoZhD1k/DashFlow?style=for-the-badge)](LICENSE)
 
+🔥 **DashFlow** is a powerful, all-in-one desktop dashboard that lets you manage **apps, games, notes, music, and quick links** in a sleek, customizable UI. 🚀
 
-## 📅 Release Date: February 3, 2025  
-## Author: Arlen Chereshnikov (DoZhD1k)
-
-### ✨ Key Features:  
-🌟 **Personal Dashboard** – Conveniently manage apps, games, notes, music, and quick links.  
-🎮 **Installed Games Scanner** – Automatically detects games from Steam, Epic Games, GOG, and Riot Games.  
-🔍 **RAWG API Integration** – Fetches game data, including covers, descriptions, and genres.  
-🎶 **Music Player** – Supports searching and streaming tracks via Audius.  
-📝 **Smart Notes** – Supports formatting, tables, code blocks, and Gemini API.  
-🔗 **Link Management** – Store and quickly access important web resources.  
-⚡ **System Commands** – Restart, shut down the PC, open Task Manager, and File Explorer.  
-🖥 **System Monitoring** – View CPU load, RAM usage, and battery status.  
-🔄 **Auto-update via GitHub Releases** – The app automatically downloads and installs new versions.  
-
-### ✅ How to Update?  
-The app will automatically download the update and prompt you to install it.  
-
-🔥 Thank you for using DashFlow! 💙  
+> 📅 **Release Date:** February 3, 2025  
+> 👨‍💻 **Author:** [Arlen Chereshnikov (DoZhD1k)](https://github.com/DoZhD1k)  
+> 🛠 **Tech Stack:** Tauri, React, Rust, TypeScript
 
 ---
 
-## RU  
+## ✨ Features
 
-## 📅 Дата выпуска: 3 февраля 2025  
-## Автор: Arlen Chereshnikov (DoZhD1k)
+- 🎮 **Game Launcher** – Scans installed games (Steam, Epic Games, GOG, Riot Games).
+- 🔍 **Game Metadata via RAWG API** – Fetches covers, descriptions, and genres.
+- 🎶 **Music Player** – Search & stream tracks via **Audius API**.
+- 📝 **Smart Notes** – Supports **tables, code blocks, Markdown, and Gemini API**.
+- 🔗 **Link Manager** – Store and quickly access important web resources.
+- ⚡ **System Commands** – Restart, shutdown, open Task Manager, File Explorer.
+- 🖥 **System Monitoring** – View CPU load, RAM usage, and battery status.
+- 🔄 **Auto-update** – Automatically downloads and installs new versions via GitHub Releases.
 
-### ✨ Основные функции:  
-🌟 **Персональный дашборд** – удобное управление приложениями, играми, заметками, музыкой и быстрыми ссылками.  
-🎮 **Сканирование установленных игр** – автоматическое обнаружение игр из Steam, Epic Games, GOG и Riot Games.  
-🔍 **Интеграция с RAWG API** – загрузка данных об играх (обложки, описания, жанры).  
-🎶 **Музыкальный плеер** – поддержка поиска и стриминга треков через Audius.  
-📝 **Умные заметки** – поддержка форматирования, таблиц, код-блоков и Gemini API.  
-🔗 **Управление ссылками** – хранение и быстрый доступ к важным веб-ресурсам.  
-⚡ **Системные команды** – перезагрузка, выключение ПК, запуск диспетчера задач и проводника.  
-🖥 **Мониторинг системы** – просмотр загрузки процессора, ОЗУ и состояния батареи.  
-🔄 **Автообновление через GitHub Releases** – приложение автоматически загружает и устанавливает новые версии.  
+💙 **Loved by developers, gamers, and productivity enthusiasts!**
 
-### ✅ Как обновиться?  
-Приложение само загрузит обновление и предложит установить.  
+---
 
-🔥 Спасибо, что используете DashFlow! 💙
+## 🚀 Getting Started
+
+### 🛠 Installation
+
+1. **Download the latest version:**  
+   👉 [DashFlow v1.0.3](https://github.com/DoZhD1k/DashFlow/releases/download/v1.0.3/dashflow_1.0.3_x64-setup.exe)
+
+2. **Run the installer** and follow the setup instructions.
+
+3. **Launch DashFlow** and start managing your digital workspace!
+
+---
+
+## 🔄 How to Update?
+
+DashFlow **automatically checks for updates**. When a new version is available:
+
+- You'll get a notification.
+- Click **Update Now**, and the new version will be installed seamlessly.
+
+Alternatively, download the latest release from:  
+🔗 [DashFlow Releases](https://github.com/DoZhD1k/DashFlow/releases)
+
+---
+
+## 💡 Contributing
+
+We welcome contributions! If you’d like to improve DashFlow, follow these steps:
+
+### 📌 How to Contribute?
+
+1. **Fork the repository**
+2. **Clone your fork**
+   ```sh
+   git clone https://github.com/your-username/DashFlow.git
+   ```
+3. **Create a feature branch**
+   ```sh
+   git checkout -b feature-name
+   ```
+4. **Make changes and commit**
+   ```sh
+   git commit -m "Added: new feature"
+   ```
+5. **Push to your fork and create a PR**
+   ```sh
+   git push origin feature-name
+   ```
+6. **Open a Pull Request** to the `main` branch.
+
+### ✅ Contribution Guidelines
+
+- Follow the [CONTRIBUTING.md](CONTRIBUTING.md) guide.
+- Make sure your code follows the project style guide.
+- Describe your changes clearly in the PR.
+
+🛠 Need ideas? Check our [Issues](https://github.com/DoZhD1k/DashFlow/issues)!
+
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
+
+---
+
+## 💬 Join the Discussion
+
+- **Issues & Bug Reports** → [GitHub Issues](https://github.com/DoZhD1k/DashFlow/issues)
+- **Feature Requests** → [Open a Feature Request](https://github.com/DoZhD1k/DashFlow/issues/new?template=feature_request.md)
+- **Pull Requests** → [Contribute Code](https://github.com/DoZhD1k/DashFlow/pulls)
+
+---
+
+## 📧 Contact Me
+
+If you have any questions, feel free to reach out:  
+📩 **Email:** chereshnikovarlen03@gmail.com
+
+---
+
+🚀 **Enjoy DashFlow? Give it a star!** ⭐  
+🔗 [https://github.com/DoZhD1k/DashFlow](https://github.com/DoZhD1k/DashFlow)
+
+🔥 Thanks for contributing and using DashFlow! 💙
