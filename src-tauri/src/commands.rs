@@ -641,3 +641,10 @@ pub fn save_video(video_data: Vec<u8>) -> Result<String, String> {
 pub fn drop_games_table() -> Result<String, String> {
     db::drop_table()
 }
+
+#[tauri::command]
+pub fn load_db() -> Result<(), String> {
+    let conn = db::init_db()?;
+    println!("✅ База данных загружена!");
+    Ok(())
+}

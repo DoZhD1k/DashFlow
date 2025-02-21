@@ -14,9 +14,12 @@ pub mod db {
     use std::path::PathBuf;
 
     /// Получаем путь к базе данных в текущей директории.
+    use dirs::home_dir;
+
     pub fn get_db_path() -> PathBuf {
-        std::env::current_dir().unwrap().join("projects.db")
+        home_dir().unwrap().join(".myapp").join("projects.db")
     }
+
 
     /// Инициализируем базу данных.
     pub fn init_db() -> Result<Connection> {

@@ -31,19 +31,19 @@ const NoteList: React.FC<NoteListProps> = ({
   onDelete,
   onUpdateTitle,
 }) => {
-  const [editingNoteId, setEditingNoteId] = useState<number | null>(null); // ID редактируемой заметки
-  const [newTitle, setNewTitle] = useState<string>(""); // Новое название
+  const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
+  const [newTitle, setNewTitle] = useState<string>("");
 
   const handleTitleChange = (id: number) => {
     if (newTitle.trim() !== "") {
-      onUpdateTitle(id, newTitle); // Сохраняем новое название
+      onUpdateTitle(id, newTitle);
     }
-    setEditingNoteId(null); // Завершаем редактирование
-    setNewTitle(""); // Сбрасываем временное значение
+    setEditingNoteId(null);
+    setNewTitle("");
   };
 
   return (
-    <div className="w-full lg:w-1/3 rounded-lg shadow-md p-4 flex flex-col">
+    <div className="w-full shadow-md p-4 flex flex-col border-r dark:border-stone-800">
       <div className="flex items-center justify-between mb-4">
         <input
           type="text"
@@ -61,7 +61,7 @@ const NoteList: React.FC<NoteListProps> = ({
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
         {notes.map((note) => (
           <div
             key={note.id}
@@ -99,7 +99,7 @@ const NoteList: React.FC<NoteListProps> = ({
               )}
               <button
                 onClick={(e) => {
-                  e.stopPropagation(); // Остановить клик, чтобы не выбрать заметку
+                  e.stopPropagation();
                   onDelete(note.id);
                 }}
                 title="Удалить заметку"

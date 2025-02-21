@@ -207,7 +207,7 @@ const CalendarWidget: React.FC = () => {
               {events.map((event) => (
                 <li
                   key={`event-${event.id}`}
-                  className="p-2 dark:bg-stone-800 rounded-lg shadow-sm text-gray-700 dark:text-gray-200 flex justify-between items-center"
+                  className="p-2 dark:bg-stone-900 dark:hover:bg-stone-700  rounded-lg shadow-sm text-gray-700 dark:text-gray-200 flex justify-between items-center"
                 >
                   <div>
                     <h4 className="font-bold">{event.title}</h4>

@@ -50,7 +50,7 @@ export default function TrendingTracks({
   }, [selectedGenre]);
 
   return (
-    <div className="overflow-y-auto custom-scrollbar">
+    <div className="overflow-y-auto custom-scrollbar p-2">
       <h2 className="text-2xl font-bold mb-4">🔥 Тренды</h2>
       {loading ? (
         <div className="flex justify-center items-center h-full min-h-[400px]">
@@ -59,12 +59,12 @@ export default function TrendingTracks({
       ) : error ? (
         <p className="text-red-400">{error}</p>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
           {tracks.length > 0 ? (
             tracks.map((track) => (
               <div
                 key={track.id}
-                className="dark:bg-stone-800 dark:hover:bg-stone-700 hover:bg-gray-200 p-3 rounded-lg shadow-md  transition cursor-pointer"
+                className="dark:bg-stone-800 dark:hover:bg-stone-700 hover:bg-gray-200 p-3 rounded-lg shadow-md transition cursor-pointer"
                 onClick={() => setCurrentTrack(track)}
               >
                 <img

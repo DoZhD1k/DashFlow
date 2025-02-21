@@ -35,7 +35,13 @@ export default function PlayerWidget() {
       <h2 className="text-lg font-bold mb-3">Сейчас играет</h2>
 
       {!currentTrack ? (
-        <p className="text-gray-400">🔍 Выберите трек для воспроизведения</p>
+        <div className="flex flex-col items-center justify-center text-center h-52 text-gray-400">
+          <span className="text-6xl">🎧</span>
+          <p className="mt-3 text-lg font-semibold">Музыка не играет</p>
+          <p className="text-sm text-gray-500">
+            Выберите трек или нажмите кнопку в плеере
+          </p>
+        </div>
       ) : (
         <>
           <img

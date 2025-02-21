@@ -60,7 +60,7 @@ export default function MusicPlayerWidget() {
                       placeholder="currentTime"
                       onChange={(e) => seekTo(parseFloat(e.target.value))}
                       className="w-full h-1 bg-gray-300 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer transition mx-3"
-                    />{" "}
+                    />
                     <span className="text-xs text-gray-400">
                       {formatTime(duration)}
                     </span>

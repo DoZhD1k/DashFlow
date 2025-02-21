@@ -1,8 +1,15 @@
 import { FC } from "react";
+// import {
+//   Code,
+//   SquareSplitVertical,
+//   ListChecks,
+//   ListOrdered,
+//   List,
+//   Quote,
+// } from "lucide-react";
 import {
   Code,
   SquareSplitVertical,
-  ListChecks,
   ListOrdered,
   List,
   Quote,
@@ -17,9 +24,9 @@ interface InsertToolsProps {
 const InsertTools: FC<InsertToolsProps> = ({ editor }) => {
   if (!editor) return null;
 
-  const toggleTaskList = () => {
-    editor.chain().focus().toggleTaskList().run();
-  };
+  // const toggleTaskList = () => {
+  //   editor.chain().focus().toggleTaskList().run();
+  // };
 
   const toggleBlockquote = () => {
     if (!editor) return;
@@ -63,7 +70,7 @@ const InsertTools: FC<InsertToolsProps> = ({ editor }) => {
       >
         <ListOrdered className="w-4 h-4" />
       </button>
-      <button
+      {/* <button
         onClick={toggleTaskList}
         className={`flex items-center justify-center w-8 h-8 rounded-md hover:bg-gray-100 transition ${
           editor.isActive("taskList") ? "bg-gray-200" : ""
@@ -71,7 +78,7 @@ const InsertTools: FC<InsertToolsProps> = ({ editor }) => {
         title="Список задач"
       >
         <ListChecks className="w-4 h-4" />
-      </button>
+      </button> */}
       <button
         onClick={toggleBlockquote}
         className={`flex items-center justify-center w-8 h-8 rounded-md hover:bg-gray-100 transition ${

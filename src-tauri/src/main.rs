@@ -33,11 +33,11 @@ fn main() {
 
             // 🔄 Проверка обновлений при старте
             tauri::async_runtime::spawn(async move {
-                if let Err(e) = update(app_handle).await {
-                    println!("❌ Ошибка автообновления: {:?}", e);
+                match update(app_handle).await {
+                    Ok(_) => println!("✅ Обновление завершено."),
+                    Err(e) => eprintln!("❌ Ошибка автообновления: {:?}", e),
                 }
             });
-
 
             // ✅ Клонируем AppHandle
             let app_handle = app.handle().clone();
@@ -135,6 +135,7 @@ fn main() {
             commands::open_dashflow_folder,
             commands::save_video,
             commands::drop_games_table,
+            commands::load_db,
         ])
         .run(tauri::generate_context!())
         .expect("Ошибка запуска приложения");
@@ -142,27 +143,39 @@ fn main() {
 
 /// 🔄 **Функция проверки обновлений**
 async fn update(app: tauri::AppHandle) -> tauri_plugin_updater::Result<()> {
-    if let Some(update) = app.updater()?.check().await? {
-        let mut downloaded = 0;
+    println!("🔍 Проверка обновлений...");
+    
+    let updater = app.updater()?;
+    
+    let update_check = updater.check().await;
+    
+    match update_check {
+        Ok(Some(update)) => {
+            let mut downloaded = 0;
 
-        println!("🔄 Найдено обновление: {:?}", update.version);
+            println!("🔄 Найдено обновление: {:?}", update.version);
 
-        update
-            .download_and_install(
-                |chunk_length, content_length| {
-                    downloaded += chunk_length;
-                    println!("📥 Загружено {}/{}", downloaded, content_length.unwrap_or(0));
-                },
-                || {
-                    println!("✅ Загрузка завершена.");
-                },
-            )
-            .await?;
+            update
+                .download_and_install(
+                    |chunk_length, content_length| {
+                        downloaded += chunk_length;
+                        println!("📥 Загружено {}/{}", downloaded, content_length.unwrap_or(0));
+                    },
+                    || {
+                        println!("✅ Загрузка завершена.");
+                    },
+                )
+                .await?;
 
-        println!("✅ Обновление установлено. Перезапуск...");
-        app.restart();
-    } else {
-        println!("✅ Установлена последняя версия.");
+            println!("✅ Обновление установлено. Перезапуск...");
+            app.restart();
+        }
+        Ok(None) => {
+            println!("✅ Установлена последняя версия.");
+        }
+        Err(e) => {
+            println!("❌ Ошибка обновления: {:?}", e);
+        }
     }
 
     Ok(())

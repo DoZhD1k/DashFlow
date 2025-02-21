@@ -1,5 +1,4 @@
 // src-tauri/src/games/detection.rs
-
 use std::path::PathBuf;
 use walkdir::WalkDir;
 use std::path::Path;

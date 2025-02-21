@@ -15,7 +15,7 @@ export default function PlaylistList({
       {playlists.length === 0 ? (
         <p className="text-gray-400">Нет плейлистов</p>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-7 gap-4">
           {playlists.map((playlist) => (
             <div
               key={playlist.id}

@@ -1,7 +1,7 @@
 {
   "name": "dashflow",
   "private": true,
-  "version": "1.0.2",
+  "version": "1.0.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -48,8 +48,10 @@
     "@tiptap/react": "^2.11.3",
     "@tiptap/starter-kit": "^2.11.3",
     "@types/lodash": "^4.17.14",
+    "html2canvas": "^1.4.1",
     "install": "^0.13.0",
     "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
     "lodash": "^4.17.21",
     "lodash.debounce": "^4.0.8",
     "marked": "^15.0.6",

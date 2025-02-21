@@ -212,7 +212,7 @@ export default function PlaylistView({
       ) : (
         <div className="p-6 overflow-y-auto custom-scrollbar">
           <h2 className="text-xl font-bold mb-4">Треки</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             {playlistTracks.map((track, index) => (
               <div
                 key={track.id}

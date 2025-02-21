@@ -29,18 +29,18 @@ export const Home: React.FC = () => {
     );
   }
   return (
-    <div className="min-h-screen max-h-screen p-8 grid grid-cols-4 gap-6 transition-colors duration-300 bg-gray-100 dark:bg-stone-900 overflow-y-auto custom-scrollbar">
+    <div className="min-h-screen max-h-screen p-8 grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 transition-colors duration-300 bg-gray-100 dark:bg-stone-900 overflow-y-auto custom-scrollbar">
       {/* 🔹 Левая колонка (3/4 экрана, теперь с row-структурой) */}
-      <div className="col-span-3 grid grid-rows-4 gap-6 ">
+      <div className="col-span-3 grid grid-rows-4 gap-4 md:gap-6 ">
         {/* 🔹 Верхний блок (заголовки) */}
-        <div className="grid grid-cols-3 gap-6 row-span-1">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 row-span-1">
           <TimeWidget />
           <CurrencyRatesWidget />
           <WeatherWidget />
         </div>
 
         {/* 🔹 Нижний блок (основной контент) */}
-        <div className="grid grid-cols-3 gap-6 row-span-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 row-span-3">
           <ScreenRecorderWidget />
           <AppLauncherWidget />
           <HotLinksWidget />
@@ -52,7 +52,7 @@ export const Home: React.FC = () => {
       </div>
 
       {/* 🔹 Правая колонка (1/4 экрана, вертикальный стек) */}
-      <div className="grid grid-rows-2 gap-6">
+      <div className="grid grid-rows-2 gap-4 md:gap-6">
         <CalendarWidget />
         <MusicPlayerWidget />
       </div>

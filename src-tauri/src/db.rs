@@ -5,6 +5,7 @@ use crate::games::DetectedGame;
 use serde_json::to_string;
 use rusqlite::OptionalExtension;
 use std::path::PathBuf;
+use std::{thread, time::Duration};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Project {
@@ -77,6 +78,7 @@ fn open_db(db_name: &str) -> Result<Connection> {
 }
 
 pub fn init_db() -> Result<Connection, String> {
+    thread::sleep(Duration::from_secs(2));
     let conn = Connection::open("projects.db").map_err(|e| e.to_string())?;
     
     // Создание таблиц

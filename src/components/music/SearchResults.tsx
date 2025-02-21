@@ -32,7 +32,7 @@ export default function SearchResults({
   ) as Playlist[];
 
   return (
-    <div className="overflow-y-auto custom-scrollbar">
+    <div className="overflow-y-auto custom-scrollbar p-2">
       {isLoading ? ( // ✅ Показываем Loader, пока идет загрузка
         <div className="flex justify-center items-center h-full min-h-[400px]">
           <Loader />

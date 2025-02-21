@@ -113,43 +113,45 @@ const Notes: React.FC = () => {
     );
   }
   return (
-    <div className="min-h-screen max-h-screen  flex flex-col lg:flex-row overflow-hidden bg-white dark:bg-stone-900">
-      <NoteList
-        notes={notes.filter((note) =>
-          note.title.toLowerCase().includes(searchQuery.toLowerCase())
-        )}
-        selectedNoteId={selectedNoteId}
-        setSelectedNoteId={handleSelectNote}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        onAdd={handleAddNote}
-        onDelete={handleDeleteNote}
-        onUpdateTitle={handleTitleChange} // 🔥 Добавлено для исправления ошибки
-      />
+    <div className="min-h-screen max-h-screen lg:flex-row overflow-hidden bg-white dark:bg-stone-900">
+      <div className="grid grid-cols-3 md:grid-cols-4 dark:bg-stone-900 min-h-screen max-h-screen lg:flex-row overflow-hidden bg-white">
+        <NoteList
+          notes={notes.filter((note) =>
+            note.title.toLowerCase().includes(searchQuery.toLowerCase())
+          )}
+          selectedNoteId={selectedNoteId}
+          setSelectedNoteId={handleSelectNote}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          onAdd={handleAddNote}
+          onDelete={handleDeleteNote}
+          onUpdateTitle={handleTitleChange} // 🔥 Добавлено для исправления ошибки
+        />
 
-      <div className="flex flex-col flex-1 overflow-hidden">
-        {selectedNoteId && selectedContent ? (
-          <Editor
-            key={selectedNoteId}
-            content={selectedContent}
-            onContentChange={handleNoteChange}
-            title={
-              notes.find((n) => n.id === selectedNoteId)?.title ||
-              "Без названия"
-            }
-            onTitleChange={(newTitle) => {
-              if (selectedNoteId) {
-                handleTitleChange(selectedNoteId, newTitle);
+        <div className="overflow-hidden col-span-2 md:col-span-3">
+          {selectedNoteId && selectedContent ? (
+            <Editor
+              key={selectedNoteId}
+              content={selectedContent}
+              onContentChange={handleNoteChange}
+              title={
+                notes.find((n) => n.id === selectedNoteId)?.title ||
+                "Без названия"
               }
-            }} // 🔥 Оборачиваем функцию
-          />
-        ) : (
-          <div className="flex flex-1 items-center justify-center">
-            <p className="text-gray-500 dark:text-gray-400">
-              Выберите заметку или создайте новую
-            </p>
-          </div>
-        )}
+              onTitleChange={(newTitle) => {
+                if (selectedNoteId) {
+                  handleTitleChange(selectedNoteId, newTitle);
+                }
+              }} // 🔥 Оборачиваем функцию
+            />
+          ) : (
+            <div className="flex flex-col flex-1 col-span-3 text-center items-center justify-center">
+              <p className="text-gray-500 dark:text-gray-400">
+                Выберите заметку или создайте новую
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -7,8 +7,13 @@ import Notes from "./pages/Notes";
 import Music from "./pages/Music";
 import { Profiles } from "./pages/Profiles";
 import KanbanBoard from "./pages/KanbanBoard";
+import { Settings } from "./pages/Settings";
+import { invoke } from "@tauri-apps/api/core";
 
 function App() {
+  useEffect(() => {
+    invoke("load_db").catch(console.error);
+  }, []);
   // Загружаем тему из localStorage при первой загрузке
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     return localStorage.getItem("theme") === "dark";
@@ -51,6 +56,7 @@ function App() {
           <Route path="/music" element={<Music />} />
           <Route path="/profiles" element={<Profiles />} />
           <Route path="/kanban" element={<KanbanBoard />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </Layout>
     </BrowserRouter>

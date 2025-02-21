@@ -109,6 +109,7 @@
 //     }
 // }
 
+// src-tauri/src/games/rawg.rs
 use reqwest::Client;
 use serde::Deserialize;
 use crate::games::DetectedGame;
