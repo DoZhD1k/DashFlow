@@ -4,7 +4,7 @@ version = 4
 
 [[package]]
 name = "DashFlow"
-version = "1.0.3"
+version = "1.0.4"
 dependencies = [
  "base64 0.21.7",
  "battery",
