@@ -78,7 +78,7 @@ fn open_db(db_name: &str) -> Result<Connection> {
 }
 
 pub fn init_db() -> Result<Connection, String> {
-    thread::sleep(Duration::from_secs(2));
+    // thread::sleep(Duration::from_secs(2));
     let conn = Connection::open("projects.db").map_err(|e| e.to_string())?;
     
     // Создание таблиц
