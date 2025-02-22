@@ -18,6 +18,10 @@ mod music;
 fn main() {
     dotenv().ok();
 
+    if let Err(err) = init_db() {
+        eprintln!("Ошибка инициализации БД: {:?}", err);
+    }
+
     tauri::Builder::default()
         .plugin(tauri_plugin_updater::Builder::new().build()) // ✅ Включаем автообновление
         .plugin(tauri_plugin_autostart::init(
@@ -30,7 +34,7 @@ fn main() {
         }))
         .setup(|app| {
             let app_handle = app.handle().clone(); // ✅ Клонируем AppHandle
-
+            println!("Окно загрузилось");
             // 🔄 Проверка обновлений при старте
             tauri::async_runtime::spawn(async move {
                 match update(app_handle).await {
@@ -80,6 +84,7 @@ fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            commands::load_db,
             commands::create_project,
             commands::list_projects,
             commands::add_todo,
@@ -135,11 +140,31 @@ fn main() {
             commands::open_dashflow_folder,
             commands::save_video,
             commands::drop_games_table,
-            commands::load_db,
+            
         ])
         .run(tauri::generate_context!())
         .expect("Ошибка запуска приложения");
 }
+
+
+fn init_db() -> Result<(), Box<dyn std::error::Error>> {
+    // Подключение к SQLite (замени на свою БД)
+    let conn = rusqlite::Connection::open("projects.db")?;
+
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS projects (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            path TEXT NOT NULL,
+            description TEXT
+        )",
+        [],
+    )?;
+
+    println!("База данных успешно инициализирована!");
+    Ok(())
+}
+
 
 /// 🔄 **Функция проверки обновлений**
 async fn update(app: tauri::AppHandle) -> tauri_plugin_updater::Result<()> {

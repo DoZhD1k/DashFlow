@@ -14,14 +14,12 @@ function App() {
   useEffect(() => {
     invoke("load_db").catch(console.error);
   }, []);
-  // Загружаем тему из localStorage при первой загрузке
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     return localStorage.getItem("theme") === "dark";
   });
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-  // Устанавливаем тему в <html> при изменении `isDarkMode`
   useEffect(() => {
     const htmlEl = document.documentElement;
     if (isDarkMode) {
