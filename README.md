@@ -28,6 +28,14 @@
 
 ---
 
+## 🔒 100% Local & Private
+
+Your data is **your data**. DashFlow ensures complete privacy by storing everything **locally** on your device. No cloud syncing, no external servers, no third-party access. Your notes, links, settings, and personal configurations remain exclusively on your machine, giving you **full control and maximum security**.
+
+> 🚫 No hidden telemetry. No tracking. No forced online accounts. Just pure, **local-first** productivity. 🔐
+
+---
+
 ## 🚀 Getting Started
 
 ### 🛠 Installation
