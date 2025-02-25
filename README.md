@@ -33,7 +33,7 @@
 ### 🛠 Installation
 
 1. **Download the latest version:**  
-   👉 [DashFlow v1.0.4](https://github.com/DoZhD1k/DashFlow/releases/download/v1.0.4/dashflow_1.0.4_x64-setup.exe)
+   👉 [DashFlow v1.0.5](https://github.com/DoZhD1k/DashFlow/releases/download/v1.0.5/dashflow_1.0.5_x64-setup.exe)
 
 2. **Run the installer** and follow the setup instructions.
 

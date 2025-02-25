@@ -28,6 +28,7 @@ import TextStyle from "@tiptap/extension-text-style";
 import Focus from "@tiptap/extension-focus";
 import FontFamily from "@tiptap/extension-font-family";
 import TextAlign from "@tiptap/extension-text-align";
+import History from "@tiptap/extension-history"; // Добавляем историю изменений
 import { all, createLowlight } from "lowlight";
 import js from "highlight.js/lib/languages/javascript";
 import ts from "highlight.js/lib/languages/typescript";
@@ -88,6 +89,10 @@ const configureExtensions = () => [
   FontFamily.configure(),
   Focus.configure({
     mode: "all",
+  }),
+  History.configure({
+    depth: 100,
+    newGroupDelay: 500,
   }),
 ];
 

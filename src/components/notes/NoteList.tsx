@@ -43,7 +43,7 @@ const NoteList: React.FC<NoteListProps> = ({
   };
 
   return (
-    <div className="w-full shadow-md p-4 flex flex-col border-r dark:border-stone-800">
+    <div className="w-full p-4 flex flex-col border-r dark:border-stone-800 max-h-screen min-h-screen">
       <div className="flex items-center justify-between mb-4">
         <input
           type="text"

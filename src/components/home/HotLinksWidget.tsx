@@ -87,10 +87,24 @@ const HotLinksWidget: React.FC = () => {
 
     try {
       const addedLink: LinkItem = await invoke("add_links", link);
+
+      console.log("Добавленная ссылка:", addedLink); // Проверка ответа
+
+      // if (!addedLink || !addedLink.id) {
+      //   alert("Ошибка: сервер не вернул ID ссылки");
+      //   return;
+      // }
+
       setLinks((prev) => [
         ...prev,
-        { ...addedLink, iconColor: addedLink.icon_color },
+        { ...addedLink, iconColor: addedLink.icon_color ?? "#000000" },
       ]);
+
+      setTimeout(() => {
+        setSearchQuery(""); // Сброс поиска для обновления списка
+      }, 100);
+      await fetchLinks();
+
       setIsModalOpen(false);
     } catch (err: any) {
       console.error("Ошибка при добавлении ссылки:", err);
@@ -129,7 +143,7 @@ const HotLinksWidget: React.FC = () => {
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="p-2 bg-blue-500 rounded-md hover:bg-blue-600 transition"
+          className="p-2 m-2 bg-blue-500 rounded-md hover:bg-blue-600 transition"
           title="Добавить ссылку"
         >
           <Plus className="w-5 h-5 text-white" />

@@ -44,7 +44,7 @@ export default function SearchResults({
           {tracks.length > 0 && (
             <div className="mb-6">
               <h3 className="text-lg font-bold mb-3">Треки</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 m-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4 m-2">
                 {tracks.map((track) => (
                   <div
                     key={track.id}
@@ -84,7 +84,7 @@ export default function SearchResults({
           {playlists.length > 0 && (
             <div>
               <h3 className="text-lg font-bold mb-3">Плейлисты</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 m-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4 m-2">
                 {playlists.map((playlist) => (
                   <div
                     key={playlist.id}

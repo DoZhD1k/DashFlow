@@ -243,13 +243,13 @@ const CalendarWidget: React.FC = () => {
               placeholder="Название события"
               value={newEventTitle}
               onChange={(e) => setNewEventTitle(e.target.value)}
-              className="border border-gray-300 rounded w-full p-2 mt-1 bg-transparent m-4"
+              className="border border-gray-300 rounded w-full p-2 mt-1 bg-transparent my-2"
             />
             <textarea
               placeholder="Описание события"
               value={newEventDescription}
               onChange={(e) => setNewEventDescription(e.target.value)}
-              className="border border-gray-300 rounded w-full p-2 mt-1 bg-transparent m-4"
+              className="border border-gray-300 rounded w-full p-2 mt-1 bg-transparent my-2"
             />
             <div className="flex justify-end gap-2">
               <button

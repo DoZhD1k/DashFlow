@@ -11,7 +11,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   setSearchQuery,
 }) => {
   return (
-    <div className="mb-4 flex items-center text-center justify-center">
+    <div className="m-4 flex items-center text-center justify-center">
       <div className="relative flex items-center">
         <input
           type="text"

@@ -98,7 +98,7 @@ const AppLauncherWidget: React.FC = () => {
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="p-2 bg-blue-500 rounded-md hover:bg-blue-600 transition"
+          className="p-2 m-2 bg-blue-500 rounded-md hover:bg-blue-600 transition"
           title="Добавить приложение"
         >
           <Plus className="w-5 h-5 text-white" />

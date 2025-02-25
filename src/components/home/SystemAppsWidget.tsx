@@ -16,7 +16,7 @@ export const SystemAppsWidget: React.FC = () => {
       action: async () => {
         try {
           const response = await invoke<string>("open_task_manager");
-          alert(response);
+          console.log(response);
         } catch (error) {
           console.error("Ошибка открытия диспетчера задач:", error);
         }
@@ -28,7 +28,7 @@ export const SystemAppsWidget: React.FC = () => {
       action: async () => {
         try {
           const response = await invoke<string>("open_settings");
-          alert(response);
+          console.log(response);
         } catch (error) {
           console.error("Ошибка открытия настроек Windows:", error);
         }
@@ -40,7 +40,7 @@ export const SystemAppsWidget: React.FC = () => {
       action: async () => {
         try {
           const response = await invoke<string>("open_explorer");
-          alert(response);
+          console.log(response);
         } catch (error) {
           console.error("Ошибка открытия проводника:", error);
         }

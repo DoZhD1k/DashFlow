@@ -1,7 +1,7 @@
 {
   "name": "dashflow",
   "private": true,
-  "version": "1.0.4",
+  "version": "1.0.5",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -24,6 +24,7 @@
     "@tiptap/extension-font-family": "^2.11.3",
     "@tiptap/extension-heading": "^2.11.3",
     "@tiptap/extension-highlight": "^2.11.3",
+    "@tiptap/extension-history": "^2.11.5",
     "@tiptap/extension-horizontal-rule": "^2.11.3",
     "@tiptap/extension-image": "^2.11.3",
     "@tiptap/extension-italic": "^2.11.3",

@@ -113,8 +113,8 @@ const Notes: React.FC = () => {
     );
   }
   return (
-    <div className="min-h-screen max-h-screen lg:flex-row overflow-hidden bg-white dark:bg-stone-900">
-      <div className="grid grid-cols-3 md:grid-cols-4 dark:bg-stone-900 min-h-screen max-h-screen lg:flex-row overflow-hidden bg-white">
+    <div className="min-h-screen lg:flex-row bg-white dark:bg-stone-900">
+      <div className="grid grid-cols-3 md:grid-cols-4 dark:bg-stone-900 lg:flex-row bg-white">
         <NoteList
           notes={notes.filter((note) =>
             note.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -145,8 +145,8 @@ const Notes: React.FC = () => {
               }} // 🔥 Оборачиваем функцию
             />
           ) : (
-            <div className="flex flex-col flex-1 col-span-3 text-center items-center justify-center">
-              <p className="text-gray-500 dark:text-gray-400">
+            <div className="flex justify-center items-center min-h-screen max-h-screen">
+              <p className="text-gray-500 dark:text-gray-400 text-2xl">
                 Выберите заметку или создайте новую
               </p>
             </div>

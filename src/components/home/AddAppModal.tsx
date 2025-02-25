@@ -14,6 +14,8 @@ const AddAppModal: React.FC<AddAppModalProps> = ({
   const [name, setName] = useState("");
   const [path, setPath] = useState("");
 
+  const sanitizeInput = (input: string) => input.replace(/["'`]/g, "");
+
   if (!isOpen) return null;
 
   return (
@@ -24,14 +26,14 @@ const AddAppModal: React.FC<AddAppModalProps> = ({
           type="text"
           placeholder="Название"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => setName(sanitizeInput(e.target.value))}
           className="border border-gray-300 rounded w-full p-2 mt-4 bg-transparent"
         />
         <input
           type="text"
           placeholder="Путь к приложению"
           value={path}
-          onChange={(e) => setPath(e.target.value)}
+          onChange={(e) => setPath(sanitizeInput(e.target.value))}
           className="border border-gray-300 rounded w-full p-2 mt-4 bg-transparent"
         />
         <div className="flex justify-end gap-2">
@@ -42,7 +44,9 @@ const AddAppModal: React.FC<AddAppModalProps> = ({
             Отмена
           </button>
           <button
-            onClick={() => onAdd({ name, path })}
+            onClick={() =>
+              onAdd({ name: sanitizeInput(name), path: sanitizeInput(path) })
+            }
             className="px-4 py-2 bg-blue-500 rounded-md mt-4"
           >
             Добавить

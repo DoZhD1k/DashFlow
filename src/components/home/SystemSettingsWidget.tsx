@@ -16,7 +16,7 @@ export const SystemSettingsWidget: React.FC = () => {
       action: async () => {
         try {
           const response = await invoke<string>("lock");
-          alert(response);
+          console.log(response);
         } catch (error) {
           console.error("Ошибка блокировки экрана:", error);
         }

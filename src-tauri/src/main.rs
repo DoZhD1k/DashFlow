@@ -14,13 +14,27 @@ mod commands;
 mod db;
 mod games;
 mod music;
+mod window_logger {
+    pub fn log_window_loading() {
+        println!("🔄 Окно загружается...");
+    }
+
+    pub fn log_window_loaded() {
+        println!("✅ Окно успешно загружено");
+    }
+}
 
 fn main() {
     dotenv().ok();
 
+    // Инициализируем БД до запуска приложения
     if let Err(err) = init_db() {
         eprintln!("Ошибка инициализации БД: {:?}", err);
+        // Завершаем программу при критической ошибке БД
+        std::process::exit(1);
     }
+
+    println!("✅ База данных успешно инициализирована");
 
     tauri::Builder::default()
         .plugin(tauri_plugin_updater::Builder::new().build()) // ✅ Включаем автообновление
