@@ -67,8 +67,6 @@ const TimeWidget: React.FC = () => {
         />
       </svg>
 
-      {/* Текущее время */}
-
       {/* Иконка дня или ночи */}
       <div className="absolute flex bottom-3 justify-start items-center text-center w-full gap-10 px-16">
         <div className="text-4xl font-bold text-black dark:text-white transition-all duration-500 ease-in-out">
@@ -78,7 +76,7 @@ const TimeWidget: React.FC = () => {
           <Sun className="w-8 h-8 text-yellow-400 animate-pulse" />
         ) : (
           <Moon className="w-8 h-8 text-blue-400 animate-fadeIn" />
-        )}{" "}
+        )}
       </div>
     </div>
   );

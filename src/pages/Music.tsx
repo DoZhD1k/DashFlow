@@ -62,8 +62,10 @@ export default function Music() {
           />
         )}
       </div>
-
-      <PlayerWidget />
+      <div className="grid gap-4">
+        {/* <PlayerWidget /> */}
+        <PlayerWidget />
+      </div>
     </div>
   );
 }

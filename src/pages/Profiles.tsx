@@ -133,7 +133,6 @@ export const Profiles: React.FC = () => {
     <div className="min-h-screen max-h-screen p-6 dark:bg-stone-900 overflow-y-auto custom-scrollbar">
       <div className="flex flex-1 justify-between items-center text-center p-2">
         <h1 className="text-2xl font-bold mb-4">Профили</h1>
-        <div></div>
         <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
         <div className="flex gap-2 mx-2">
